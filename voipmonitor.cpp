@@ -2218,10 +2218,13 @@ int eval_config(string inistr) {
 		char _opt_pcap_queue_compress_method[10];
 		strncpy(_opt_pcap_queue_compress_method, value, sizeof(_opt_pcap_queue_compress_method));
 		strlwr(_opt_pcap_queue_compress_method, sizeof(_opt_pcap_queue_compress_method));
+#ifdef HAVE_LIBSNAPPY
 		if(!strcmp(_opt_pcap_queue_compress_method, "snappy")) {
 			opt_pcap_queue_compress_method = pcap_block_store::snappy;
 			opt_pcap_queue_compress = true;
-		} else if(!strcmp(_opt_pcap_queue_compress_method, "lz4")) {
+		}
+#endif
+		if(!strcmp(_opt_pcap_queue_compress_method, "lz4")) {
 			opt_pcap_queue_compress_method = pcap_block_store::lz4;
 			opt_pcap_queue_compress = true;
 		}

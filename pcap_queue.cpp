@@ -15,7 +15,9 @@
 #include <vector>
 #include <malloc.h>
 
+#ifdef HAVE_LIBSNAPPY
 #include <snappy-c.h>
+#endif
 #ifdef HAVE_LIBLZ4
 #include <lz4.h>
 #endif //HAVE_LIBLZ4
@@ -414,12 +416,17 @@ bool pcap_block_store::compress() {
 		#endif //HAVE_LIBLZ4
 	case snappy:
 	default:
+#ifdef HAVE_LIBSNAPPY
 		return(this->compress_snappy());
+#else
+		break;
+#endif
 	}
 	return(true);
 }
 
 bool pcap_block_store::compress_snappy() {
+#ifdef HAVE_LIBSNAPPY
 	size_t snappyBuffSize = snappy_max_compressed_length(this->size);
 	u_char *snappyBuff = new FILE_LINE u_char[snappyBuffSize];
 	if(!snappyBuff) {
@@ -448,6 +455,7 @@ bool pcap_block_store::compress_snappy() {
 			break;
 	}
 	delete [] snappyBuff; 
+#endif
 	return(false);
 }
 
@@ -488,7 +496,11 @@ bool pcap_block_store::uncompress(compress_method method) {
 		#endif //HAVE_LIBLZ4
 	case snappy:
 	default:
+#ifdef HAVE_LIBSNAPPY
 		return(this->uncompress_snappy());
+#else
+		break;
+#endif
 	}
 	return(true);
 }
@@ -497,6 +509,7 @@ bool pcap_block_store::uncompress_snappy() {
 	if(!this->size_compress) {
 		return(true);
 	}
+#ifdef HAVE_LIBSNAPPY
 	size_t snappyBuffSize = this->size;
 	u_char *snappyBuff = new FILE_LINE u_char[snappyBuffSize];
 	snappy_status snappyRslt = snappy_uncompress((char*)this->block, this->size_compress, (char*)snappyBuff, &snappyBuffSize);
@@ -517,6 +530,7 @@ bool pcap_block_store::uncompress_snappy() {
 			break;
 	}
 	delete [] snappyBuff;
+#endif
 	return(false);
 }
 

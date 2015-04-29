@@ -380,6 +380,7 @@ bool CompressStream::compress(char *data, u_int32_t len, bool flush, CompressStr
 		}
 		break;
 	case snappy: {
+#ifdef HAVE_LIBSNAPPY
 		if(!this->compressBuffer) {
 			this->initCompress();
 		}
@@ -404,6 +405,7 @@ bool CompressStream::compress(char *data, u_int32_t len, bool flush, CompressStr
 			this->setError("snappy compress failed -  unknown error");
 			return(false);
 		}
+#endif
 		}
 		break;
 	}
@@ -520,6 +522,7 @@ bool CompressStream::decompress(char *data, u_int32_t len, u_int32_t decompress_
 		#endif //HAVE_LIBLZ4
 		break;
 	case snappy: {
+#ifdef HAVE_LIBSNAPPY
 		if(!this->decompressBuffer || !this->maxDataLength) {
 			this->initDecompress(decompress_len);
 		}
@@ -542,6 +545,7 @@ bool CompressStream::decompress(char *data, u_int32_t len, u_int32_t decompress_
 			this->setError("snappy decompress failed - unknown error");
 			return(false);
 		}
+#endif
 		}
 		break;
 	}
@@ -571,11 +575,13 @@ void CompressStream::createCompressBuffer() {
 		#endif //HAVE_LIBLZ4
 		break;
 	case snappy:
+#ifdef HAVE_LIBSNAPPY
 		if(this->maxDataLength) {
 			this->compressBufferLength = this->maxDataLength;
 		}
 		this->compressBufferBoundLength = snappy_max_compressed_length(this->compressBufferLength);
 		this->compressBuffer = new FILE_LINE char[this->compressBufferBoundLength];
+#endif
 		break;
 	}
 }

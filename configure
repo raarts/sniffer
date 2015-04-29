@@ -597,6 +597,7 @@ MYSQLLIB
 MYSQLCXXFLAGS
 MYSQLCFLAGS
 LIBJSON_NAME
+LIBSNAPPY
 LIBOGGVORBIS
 LIBODBC
 LIBLD
@@ -657,6 +658,7 @@ ac_user_opts='
 enable_option_checking
 with_odbc
 with_oggvorbis
+with_snappy
 with_mysql
 '
       ac_precious_vars='build_alias
@@ -1280,6 +1282,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
+  --without-snappy        disable support for snappy
   --with-mysql=PATH path to mysql_config binary or mysql prefix dir
 
 Some influential environment variables:
@@ -3255,6 +3258,130 @@ _ACEOF
 
 fi
 
+# check for pcap
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpcap" >&5
+$as_echo_n "checking for main in -lpcap... " >&6; }
+if ${ac_cv_lib_pcap_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpcap  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pcap_main=yes
+else
+  ac_cv_lib_pcap_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pcap_main" >&5
+$as_echo "$ac_cv_lib_pcap_main" >&6; }
+if test "x$ac_cv_lib_pcap_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPCAP 1
+_ACEOF
+
+  LIBS="-lpcap $LIBS"
+
+else
+  as_fn_error $? "Unable to find libpcap library. Debian: apt-get install libpcap-dev. Centos/Redhat: yum install libpcap-devel" "$LINENO" 5
+fi
+
+# FIXME: Replace `main' with a function in `-lpthread':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpthread" >&5
+$as_echo_n "checking for main in -lpthread... " >&6; }
+if ${ac_cv_lib_pthread_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpthread  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pthread_main=yes
+else
+  ac_cv_lib_pthread_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pthread_main" >&5
+$as_echo "$ac_cv_lib_pthread_main" >&6; }
+if test "x$ac_cv_lib_pthread_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPTHREAD 1
+_ACEOF
+
+  LIBS="-lpthread $LIBS"
+
+fi
+
+# FIXME: Replace `main' with a function in `-lrt':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lrt" >&5
+$as_echo_n "checking for main in -lrt... " >&6; }
+if ${ac_cv_lib_rt_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lrt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_rt_main=yes
+else
+  ac_cv_lib_rt_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_main" >&5
+$as_echo "$ac_cv_lib_rt_main" >&6; }
+if test "x$ac_cv_lib_rt_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBRT 1
+_ACEOF
+
+  LIBS="-lrt $LIBS"
+
+fi
+
+# FIXME: Replace `main' with a function in `-lssl':
+#AC_CHECK_LIB([ssl], [main])
 # Check for ODBC, unless explicitly disabled.
 
 # Check whether --with-odbc was given.
@@ -3505,177 +3632,20 @@ else
   HAVE_LIBOGGVORBIS_T=no
 fi
 
-# FIXME: Replace `main' with a function in `-lvorbisenc':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lvorbisenc" >&5
-$as_echo_n "checking for main in -lvorbisenc... " >&6; }
-if ${ac_cv_lib_vorbisenc_main+:} false; then :
-  $as_echo_n "(cached) " >&6
+# Check for snappy library
+
+# Check whether --with-snappy was given.
+if test "${with_snappy+set}" = set; then :
+  withval=$with_snappy;
 else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lvorbisenc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_vorbisenc_main=yes
-else
-  ac_cv_lib_vorbisenc_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_vorbisenc_main" >&5
-$as_echo "$ac_cv_lib_vorbisenc_main" >&6; }
-if test "x$ac_cv_lib_vorbisenc_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBVORBISENC 1
-_ACEOF
-
-  LIBS="-lvorbisenc $LIBS"
-
-else
-  as_fn_error $? "Unable to find VORBISENC library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel" "$LINENO" 5
+  with_snappy=yes
 fi
 
-
-# check for pcap
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpcap" >&5
-$as_echo_n "checking for main in -lpcap... " >&6; }
-if ${ac_cv_lib_pcap_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpcap  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_pcap_main=yes
-else
-  ac_cv_lib_pcap_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pcap_main" >&5
-$as_echo "$ac_cv_lib_pcap_main" >&6; }
-if test "x$ac_cv_lib_pcap_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPCAP 1
-_ACEOF
-
-  LIBS="-lpcap $LIBS"
-
-else
-  as_fn_error $? "Unable to find libpcap library. Debian: apt-get install libpcap-dev. Centos/Redhat: yum install libpcap-devel" "$LINENO" 5
-fi
-
-# FIXME: Replace `main' with a function in `-lpthread':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpthread" >&5
-$as_echo_n "checking for main in -lpthread... " >&6; }
-if ${ac_cv_lib_pthread_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpthread  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_pthread_main=yes
-else
-  ac_cv_lib_pthread_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pthread_main" >&5
-$as_echo "$ac_cv_lib_pthread_main" >&6; }
-if test "x$ac_cv_lib_pthread_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPTHREAD 1
-_ACEOF
-
-  LIBS="-lpthread $LIBS"
-
-fi
-
-# FIXME: Replace `main' with a function in `-lrt':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lrt" >&5
-$as_echo_n "checking for main in -lrt... " >&6; }
-if ${ac_cv_lib_rt_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lrt  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_rt_main=yes
-else
-  ac_cv_lib_rt_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_main" >&5
-$as_echo "$ac_cv_lib_rt_main" >&6; }
-if test "x$ac_cv_lib_rt_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBRT 1
-_ACEOF
-
-  LIBS="-lrt $LIBS"
-
-fi
-
-# FIXME: Replace `main' with a function in `-lssl':
-#AC_CHECK_LIB([ssl], [main])
-# FIXME: Replace `main' with a function in `-lz':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lsnappy" >&5
-$as_echo_n "checking for main in -lsnappy... " >&6; }
-if ${ac_cv_lib_snappy_main+:} false; then :
+LIBSNAPPY=
+if test "x$with_snappy" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _ZN6snappy11RawCompressEPKcmPcPm in -lsnappy" >&5
+$as_echo_n "checking for _ZN6snappy11RawCompressEPKcmPcPm in -lsnappy... " >&6; }
+if ${ac_cv_lib_snappy__ZN6snappy11RawCompressEPKcmPcPm+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -3683,35 +3653,52 @@ LIBS="-lsnappy  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _ZN6snappy11RawCompressEPKcmPcPm ();
 int
 main ()
 {
-return main ();
+return _ZN6snappy11RawCompressEPKcmPcPm ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_snappy_main=yes
+  ac_cv_lib_snappy__ZN6snappy11RawCompressEPKcmPcPm=yes
 else
-  ac_cv_lib_snappy_main=no
+  ac_cv_lib_snappy__ZN6snappy11RawCompressEPKcmPcPm=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_snappy_main" >&5
-$as_echo "$ac_cv_lib_snappy_main" >&6; }
-if test "x$ac_cv_lib_snappy_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBSNAPPY 1
-_ACEOF
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_snappy__ZN6snappy11RawCompressEPKcmPcPm" >&5
+$as_echo "$ac_cv_lib_snappy__ZN6snappy11RawCompressEPKcmPcPm" >&6; }
+if test "x$ac_cv_lib_snappy__ZN6snappy11RawCompressEPKcmPcPm" = xyes; then :
+  LIBSNAPPY="-lsnappy"
 
-  LIBS="-lsnappy $LIBS"
+
+$as_echo "#define HAVE_LIBSNAPPY 1" >>confdefs.h
+
+               HAVE_LIBSNAPPY_T=yes
 
 else
-  as_fn_error $? "Unable to find snappy library. apt-get install libsnappy-dev | or compile from source: https://snappy.googlecode.com/files/snappy-1.1.0.tar.gz" "$LINENO" 5
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find snappy library. apt-get install libsnappy-dev | or compile from source: https://snappy.googlecode.com/files/snappy-1.1.0.tar.gz
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+else
+  HAVE_LIBSNAPPY_T=no
+
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcurl" >&5
@@ -5584,6 +5571,7 @@ gnutls library enabled (SIP TLS)       : $LIBGNUTLS_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
 oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
+snappy enabled                         : $HAVE_LIBSNAPPY_T
 
 shared binary: run make
 static binary: run make static
@@ -5612,6 +5600,7 @@ gnutls library enabled (SIP TLS)       : $LIBGNUTLS_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
 oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
+snappy enabled                         : $HAVE_LIBSNAPPY_T
 
 shared binary: run make
 static binary: run make static
