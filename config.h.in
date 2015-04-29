@@ -48,7 +48,7 @@
 /* Define if you have libsnappy */
 #undef HAVE_LIBSNAPPY
 
-/* Define if using libss */
+/* Define if you have libssh */
 #undef HAVE_LIBSSH
 
 /* Define if using libtcmalloc */

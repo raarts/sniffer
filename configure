@@ -590,13 +590,13 @@ LIBOBJS
 LIBTCMALLOC
 LIBGNUTLSSTATIC
 LIBGNUTLS
-LIBSSH
 LIBLZMA
 MYSQLINCLUDE
 MYSQLLIB
 MYSQLCXXFLAGS
 MYSQLCFLAGS
 LIBJSON_NAME
+LIBSSH
 LIBSNAPPY
 LIBOGGVORBIS
 LIBODBC
@@ -659,6 +659,7 @@ enable_option_checking
 with_odbc
 with_oggvorbis
 with_snappy
+with_ssh
 with_mysql
 '
       ac_precious_vars='build_alias
@@ -1283,6 +1284,7 @@ Optional Packages:
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
+  --without-ssh           disable support for ssh
   --with-mysql=PATH path to mysql_config binary or mysql prefix dir
 
 Some influential environment variables:
@@ -3742,9 +3744,21 @@ else
   as_fn_error $? "Unable to find curl library. apt-get libcurl4-openssl-dev | yum curl-devel" "$LINENO" 5
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ssh_forward_accept in -lssh" >&5
-$as_echo_n "checking for ssh_forward_accept in -lssh... " >&6; }
-if ${ac_cv_lib_ssh_ssh_forward_accept+:} false; then :
+
+# Check for libssh
+
+# Check whether --with-ssh was given.
+if test "${with_ssh+set}" = set; then :
+  withval=$with_ssh;
+else
+  with_ssh=yes
+fi
+
+LIBSSH=
+if test "x$with_ssh" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ssh_options_set in -lssh" >&5
+$as_echo_n "checking for ssh_options_set in -lssh... " >&6; }
+if ${ac_cv_lib_ssh_ssh_options_set+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -3758,31 +3772,46 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char ssh_forward_accept ();
+char ssh_options_set ();
 int
 main ()
 {
-return ssh_forward_accept ();
+return ssh_options_set ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_ssh_ssh_forward_accept=yes
+  ac_cv_lib_ssh_ssh_options_set=yes
 else
-  ac_cv_lib_ssh_ssh_forward_accept=no
+  ac_cv_lib_ssh_ssh_options_set=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssh_ssh_forward_accept" >&5
-$as_echo "$ac_cv_lib_ssh_ssh_forward_accept" >&6; }
-if test "x$ac_cv_lib_ssh_ssh_forward_accept" = xyes; then :
-  HAVE_LIBSSH=1
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ssh_ssh_options_set" >&5
+$as_echo "$ac_cv_lib_ssh_ssh_options_set" >&6; }
+if test "x$ac_cv_lib_ssh_ssh_options_set" = xyes; then :
+  LIBSSH="-lssh -lssh_threads"
+
+
+$as_echo "#define HAVE_LIBSSH 1" >>confdefs.h
+
+               HAVE_LIBSSH_T=yes
+
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Your libssh is old or missing - cloud feature is disabled. apt-get install libssh-dev | yum install libssh-devel | or compile from source https://red.libssh.org/projects/libssh/files" >&5
-$as_echo "$as_me: Your libssh is old or missing - cloud feature is disabled. apt-get install libssh-dev | yum install libssh-devel | or compile from source https://red.libssh.org/projects/libssh/files" >&6;}
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Your libssh is old or missing - cloud feature is disabled. apt-get install libssh-dev | yum install libssh-devel | or compile from source https://red.libssh.org/projects/libssh/files
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+else
+  HAVE_LIBSSH_T=no
+
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ljson" >&5
@@ -4205,16 +4234,6 @@ $as_echo "#define HAVE_LIBLZMA 1" >>confdefs.h
 	LIBLZMA="-llzma"
 
 	HAVE_LIBLZMA_T=yes
-fi
-
-HAVE_LIBSSH_T=no
-if test "x$HAVE_LIBSSH" = "x1"; then
-
-$as_echo "#define HAVE_LIBSSH 1" >>confdefs.h
-
-	LIBSSH="-lssh -lssh_threads"
-
-	HAVE_LIBSSH_T=yes
 fi
 
 LIBGNUTLS_T=no

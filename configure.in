@@ -118,7 +118,27 @@ AS_IF([test "x$with_snappy" != xno],
      )
 
 AC_CHECK_LIB([curl], [main], , AC_MSG_ERROR([Unable to find curl library. apt-get libcurl4-openssl-dev | yum curl-devel]))
-AC_CHECK_LIB([ssh], [ssh_forward_accept], HAVE_LIBSSH=1, AC_MSG_NOTICE([Your libssh is old or missing - cloud feature is disabled. apt-get install libssh-dev | yum install libssh-devel | or compile from source https://red.libssh.org/projects/libssh/files]))
+
+# Check for libssh
+AC_ARG_WITH([ssh],
+            [AS_HELP_STRING([--without-ssh],
+              [disable support for ssh])],
+            [],
+            [with_ssh=yes])
+LIBSSH=
+AS_IF([test "x$with_ssh" != xno],
+      [AC_CHECK_LIB([ssh], [ssh_options_set],
+         [AC_SUBST([LIBSSH], ["-lssh -lssh_threads"])
+               AC_DEFINE([HAVE_LIBSSH], [1], [Define if you have libssh])
+               HAVE_LIBSSH_T=yes
+         ],
+         [AC_MSG_FAILURE(
+               [Your libssh is old or missing - cloud feature is disabled. apt-get install libssh-dev | yum install libssh-devel | or compile from source https://red.libssh.org/projects/libssh/files])
+         ])
+       ],
+       HAVE_LIBSSH_T=no
+     )
+
 AC_CHECK_LIB([json], [main], LIBJSON_NAME='json')
 AC_CHECK_LIB([json-c], [main], LIBJSON_NAME='json-c')
 if test "x$LIBJSON_NAME" = "x"; then
@@ -177,13 +197,6 @@ if test "x$HAVE_LIBLZMA" = "x1"; then
 	AC_DEFINE([HAVE_LIBLZMA], [1], [Define if using liblzma])
 	AC_SUBST([LIBLZMA],["-llzma"])
 	HAVE_LIBLZMA_T=yes
-fi
-
-HAVE_LIBSSH_T=no
-if test "x$HAVE_LIBSSH" = "x1"; then 
-	AC_DEFINE([HAVE_LIBSSH], [1], [Define if using libss])
-	AC_SUBST([LIBSSH],["-lssh -lssh_threads"])
-	HAVE_LIBSSH_T=yes
 fi
 
 LIBGNUTLS_T=no
