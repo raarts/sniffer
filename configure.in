@@ -89,9 +89,6 @@ else
   HAVE_LIBOGGVORBIS_T=no
 fi
 
-# FIXME: Replace `main' with a function in `-lvorbisenc':
-AC_CHECK_LIB([vorbisenc], [main], ,AC_MSG_ERROR([Unable to find VORBISENC library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel]))
-
 # check for pcap
 AC_CHECK_LIB([pcap], [main], ,AC_MSG_ERROR([Unable to find libpcap library. Debian: apt-get install libpcap-dev. Centos/Redhat: yum install libpcap-devel]))
 # FIXME: Replace `main' with a function in `-lpthread':
