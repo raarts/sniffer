@@ -428,6 +428,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			cerr << "Error sending data to client" << endl;
 			return -1;
 		}
+#ifdef HAVE_LIBRRD
 	} else if(strstr(buf, "creategraph") != NULL) {
 		checkRrdVersion(true);
 		extern int vm_rrd_version;
@@ -577,7 +578,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 		delete [] manager_args;
 		pthread_mutex_unlock(&vm_rrd_lock);
 		return res;
-
+#endif
 	} else if(strstr(buf, "reindexfiles") != NULL) {
 		char date[21];
 		int hour;
@@ -1725,11 +1726,15 @@ getwav:
 		extern vm_atomic<u_long> pbCountPacketDrop;
 		extern bool opt_upgrade_by_git;
 		ostringstream outStrStat;
+#ifdef HAVE_LIBRRD
 		extern int vm_rrd_version;
 		checkRrdVersion(true);
+#endif
 		outStrStat << "{"
 			   << "\"version\": \"" << RTPSENSOR_VERSION << "\","
+#ifdef HAVE_LIBRRD
 			   << "\"rrd_version\": \"" << vm_rrd_version << "\","
+#endif
 			   << "\"storingCdrLastWriteAt\": \"" << storingCdrLastWriteAt << "\","
 			   << "\"pbStatString\": \"" << pbStatString << "\","
 			   << "\"pbCountPacketDrop\": \"" << pbCountPacketDrop << "\","

@@ -39,7 +39,7 @@
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
 
-/* Define to 1 if you have the `rrd' library (-lrrd). */
+/* Define if you have librrd */
 #undef HAVE_LIBRRD
 
 /* Define to 1 if you have the `rt' library (-lrt). */

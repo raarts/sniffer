@@ -6,6 +6,7 @@
 #include <syslog.h>
 
 #include "voipmonitor.h"
+#ifdef HAVE_LIBRRD
 #include "rrd.h"
 #include "tools.h"
 
@@ -1180,3 +1181,5 @@ void checkRrdVersion(bool silent) {
 		}
 	}
 }
+#endif
+

@@ -76,7 +76,9 @@
 #include "regcache.h"
 #include "config_mysql.h"
 #include "fraud.h"
+#ifdef HAVE_LIBRRD
 #include "rrd.h"
+#endif
 #include "heap_safe.h"
 #include "tar.h"
 #include "codec_alaw.h"
@@ -175,7 +177,9 @@ int opt_packetbuffered = 0;	// Make .pcap files writing ‘‘packet-buffered’
 				// writen file anytime, it will be consistent.
 	
 int opt_disableplc = 0 ;	// On or Off packet loss concealment			
+#ifdef HAVE_LIBRRD
 int opt_rrd = 1;
+#endif
 int opt_remotepartyid = 0;	//Rewrite caller? If sip invite contain header Remote-Party-ID, caller num/name is overwritten by its values.
 int opt_fork = 1;		// fork or run foreground 
 int opt_saveSIP = 0;		// save SIP packets to pcap file?
@@ -576,7 +580,9 @@ rtp_read_thread *rtp_threads;
 int manager_socket_server = 0;
 
 pthread_mutex_t mysqlconnect_lock;
+#ifdef HAVE_LIBRRD
 pthread_mutex_t vm_rrd_lock;
+#endif
 
 pthread_t pcap_read_thread;
 #ifdef QUEUE_MUTEX
@@ -1506,9 +1512,11 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "plcdisable", NULL))) {
 		opt_disableplc = yesno(value);
 	}
+#ifdef HAVE_LIBRRD
 	if((value = ini.GetValue("general", "rrd", NULL))) {
 		opt_rrd = yesno(value);
 	}
+#endif
 	if((value = ini.GetValue("general", "remotepartyid", NULL))) {
 		opt_remotepartyid = yesno(value);
 	}
@@ -3201,7 +3209,9 @@ int main(int argc, char *argv[]) {
 	memset(webrtcportmatrix, 0, 65537);
 
 	pthread_mutex_init(&mysqlconnect_lock, NULL);
+#ifdef HAVE_LIBRRD
 	pthread_mutex_init(&vm_rrd_lock, NULL);
+#endif
 	pthread_mutex_init(&tartimemaplock, NULL);
 	pthread_mutex_init(&terminate_packetbuffer_lock, NULL);
 
@@ -3433,7 +3443,9 @@ int main(int argc, char *argv[]) {
 						else if(verbparams[i] == "check_is_caller_called")	sverb.check_is_caller_called = 1;
 						else if(verbparams[i] == "disable_threads_rtp")		sverb.disable_threads_rtp = 1;
 						else if(verbparams[i] == "packet_lost")			sverb.packet_lost = 1;
+#ifdef HAVE_LIBRRD
 						else if(verbparams[i] == "rrd_info")			sverb.rrd_info = 1;
+#endif
 						else if(verbparams[i] == "http")			sverb.http = 1;
 						else if(verbparams[i] == "webrtc")			sverb.webrtc = 1;
 						else if(verbparams[i] == "ssl")				sverb.ssl = 1;
@@ -3813,6 +3825,7 @@ int main(int argc, char *argv[]) {
 		return(untar_gui(opt_untar_gui_params));
 	}
 
+#ifdef HAVE_LIBRRD
 	if(opt_rrd && opt_read_from_file) {
 		//disable update of rrd statistics when reading packets from file
 		opt_rrd = 0;
@@ -3822,6 +3835,7 @@ int main(int argc, char *argv[]) {
           //disable update of rrd statistics when reading packets from file
           opt_rrd = 0; 
 	}
+#endif
 
 	if(cloud_url[0] != '\0') {
 		for(int pass = 0; pass < 5; pass++) {
@@ -3871,7 +3885,9 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
+#ifdef HAVE_LIBRRD
 	checkRrdVersion();
+#endif
 	
 	if(opt_cachedir[0]) {
 		opt_defer_create_spooldir = false;

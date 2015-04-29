@@ -1044,6 +1044,7 @@ void PcapQueue::setInstancePcapHandle(PcapQueue *pcapQueue) {
 
 void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 
+#ifdef HAVE_LIBRRD
 //For RRD updates
 	double rrdheap_buffer = 0;
 	double rrdheap_ratio = 0;
@@ -1070,6 +1071,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 	double rrdRSSVSZ_vsize = 0;
 	double rrdspeedmbs = 0.0;
 	int rrdcallscounter = 0;
+#endif
 
 	if(!VERBOSE && !DEBUG_VERBOSE) {
 		return;
@@ -1143,7 +1145,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			if(opt_ipaccount) {
 				outStr << "ipacc_buffer[" << lengthIpaccBuffer() << "] ";
 			}
+#ifdef HAVE_LIBRRD
 			if (opt_rrd) rrdcallscounter = calltable->calls_listMAP.size();
+#endif
 			extern u_int64_t counter_calls;
 			extern u_int64_t counter_sip_packets[2];
 			extern u_int64_t counter_sip_register_packets;
@@ -1158,35 +1162,45 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 				outStr << "PS[C:";
 				if(this->counter_calls_old) {
 					outStr << (counter_calls - this->counter_calls_old) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_C = (counter_calls - this->counter_calls_old) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
 				outStr << " S:";
 				if(this->counter_sip_packets_old[0]) {
 					outStr << (counter_sip_packets[0] - this->counter_sip_packets_old[0]) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_S0 = (counter_sip_packets[0] - this->counter_sip_packets_old[0]) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
 				outStr << "/";
 				if(this->counter_sip_packets_old[1]) {
 					outStr << (counter_sip_packets[1] - this->counter_sip_packets_old[1]) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_S1 = (counter_sip_packets[1] - this->counter_sip_packets_old[1]) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
 				outStr << " SR:";
 				if(this->counter_sip_register_packets_old) {
 					outStr << (counter_sip_register_packets - this->counter_sip_register_packets_old) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_SR = (counter_sip_register_packets - this->counter_sip_register_packets_old) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
 				outStr << " SM:";
 				if(this->counter_sip_message_packets_old) {
 					outStr << (counter_sip_message_packets - this->counter_sip_message_packets_old) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_SM = (counter_sip_message_packets - this->counter_sip_message_packets_old) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
@@ -1194,14 +1208,18 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 				outStr << " R:";
 				if(this->counter_rtp_packets_old) {
 					outStr << (counter_rtp_packets - this->counter_rtp_packets_old) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_R = (counter_rtp_packets - this->counter_rtp_packets_old) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
 				outStr << " A:";
 				if(this->counter_all_packets_old) {
 					outStr << (counter_all_packets - this->counter_all_packets_old) / statPeriod;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdPS_A = (counter_all_packets - this->counter_all_packets_old) / statPeriod;
+#endif
 				} else {
 					outStr << "-";
 				}
@@ -1232,7 +1250,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 							}
 						}
 						outStr << sizeSQLq;
+#ifdef HAVE_LIBRRD
 						if (opt_rrd) rrdSQLq_C += sizeSQLq / 100;
+#endif
 					}
 				}
 				for(int i = 0; i < opt_mysqlstore_max_threads_message; i++) {
@@ -1247,7 +1267,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 							}
 						}
 						outStr << sizeSQLq;
+#ifdef HAVE_LIBRRD
 						if (opt_rrd) rrdSQLq_M += sizeSQLq / 100;
+#endif
 					}
 				}
 				for(int i = 0; i < opt_mysqlstore_max_threads_register; i++) {
@@ -1262,7 +1284,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 							}
 						}
 						outStr << sizeSQLq;
+#ifdef HAVE_LIBRRD
 						if (opt_rrd) rrdSQLq_R += sizeSQLq / 100;
+#endif
 					}
 				}
 				sizeSQLq = sqlStore->getSize(STORE_PROC_ID_SAVE_PACKET_SQL);
@@ -1272,7 +1296,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 				sizeSQLq = sqlStore->getSize(STORE_PROC_ID_CLEANSPOOL);
 				if(sizeSQLq >= 0) {
 					outStr << " Cl:" << sizeSQLq;
+#ifdef HAVE_LIBRRD
 					if (opt_rrd) rrdSQLq_Cl += sizeSQLq / 100;
+#endif
 				}
 				for(int i = 0; i < opt_mysqlstore_max_threads_http; i++) {
 					sizeSQLq = sqlStore->getSize(STORE_PROC_ID_HTTP_1 + i);
@@ -1283,7 +1309,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 							outStr << " H:";
 						}
 						outStr << sizeSQLq;
+#ifdef HAVE_LIBRRD
 						if (opt_rrd) rrdSQLq_H += sizeSQLq / 100;
+#endif
 					}
 				}
 				if(opt_ipaccount) {
@@ -1329,10 +1357,12 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 		}
 		outStr << "heap[" << setprecision(0) << memoryBufferPerc << "|"
 				  << setprecision(0) << memoryBufferPerc_trash << "|";
+#ifdef HAVE_LIBRRD
 		if(opt_rrd) {
 			rrdheap_buffer = memoryBufferPerc;
 			rrdheap_ratio = buffersControl.getPercUseAsync();
 		}
+#endif
 
 		double useAsyncWriteBuffer = buffersControl.getPercUseAsync();
 		extern bool suspendCleanspool;
@@ -1356,13 +1386,17 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 				outStr << "drop[";
 				if(bypassBufferSizeExeeded) {
 					outStr << "H:" << bypassBufferSizeExeeded;
+#ifdef HAVE_LIBRRD
 					if(opt_rrd) rrddrop_exceeded = bypassBufferSizeExeeded;
+#endif
 				}
 				if(!statPacketDrops.empty()) {
 					if(bypassBufferSizeExeeded) {
 						outStr << " ";
 					}
+#ifdef HAVE_LIBRRD
 					if(opt_rrd) rrddrop_packets = this->instancePcapHandle->getCountPacketDrop();
+#endif
 					outStr << statPacketDrops;
 				}
 				outStr << "] ";
@@ -1381,7 +1415,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 		double speed = this->pcapStat_get_speed_mb_s(statPeriod);
 		if(speed >= 0) {
 			outStr << "[" << setprecision(1) << speed << "Mb/s] ";
+#ifdef HAVE_LIBRRD
 			if (opt_rrd) rrdspeedmbs = speed;
+#endif
 		}
 		if(opt_cachedir[0] != '\0') {
 			outStr << "cdq[" << calltable->files_queue.size() << "][" << ((float)(cachedirtransfered - lastcachedirtransfered) / 1024.0 / 1024.0 / (float)statPeriod) << " MB/s] ";
@@ -1429,7 +1465,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 				}
 			}
 			outStrStat << "%] ";
+#ifdef HAVE_LIBRRD
 			if (opt_rrd) rrdtCPU_t0 = t0cpu;
+#endif
 		}
 	}
 	string t1cpu = this->getCpuUsage(false, true);
@@ -1439,7 +1477,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 		double t1cpu = this->getCpuUsagePerc(mainThread, true);
 		if(t1cpu >= 0) {
 			outStrStat << "t1CPU[" << setprecision(1) << t1cpu << "%] ";
+#ifdef HAVE_LIBRRD
 			if (opt_rrd) rrdtCPU_t1 = t1cpu;
+#endif
 		}
 	}
 	double t2cpu = this->getCpuUsagePerc(writeThread, true);
@@ -1449,10 +1489,14 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			double t2cpu_preprocess_packet_out_thread = preProcessPacket->getCpuUsagePerc(true);
 			if(t2cpu_preprocess_packet_out_thread >= 0) {
 				outStrStat << "/" << setprecision(1) << t2cpu_preprocess_packet_out_thread;
+#ifdef HAVE_LIBRRD
 				if (opt_rrd) rrdtCPU_t2 = t2cpu_preprocess_packet_out_thread;
+#endif
 			}
 		} else {
+#ifdef HAVE_LIBRRD
 			if (opt_rrd) rrdtCPU_t2 = t2cpu;
+#endif
 		}
 		for(int i = 0; i < MAX_PROCESS_RTP_PACKET_THREADS; i++) {
 			if(processRtpPacket[i]) {
@@ -1503,10 +1547,12 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			outStrStat << setprecision(1) << v_tac_cpu[i];
 		}
 		outStrStat << "%] ";
+#ifdef HAVE_LIBRRD
 		if (opt_rrd) {
 			rrdtacCPU_nmt = v_tac_cpu.size();
 			rrdtacCPU_lastt = last_tac_cpu;
 		}
+#endif
 	}
 	extern int opt_pcap_dump_asyncwrite_limit_new_thread;
 	if(last_tac_cpu > opt_pcap_dump_asyncwrite_limit_new_thread) {
@@ -1527,7 +1573,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 	long unsigned int rss = this->getRssUsage(true);
 	if(rss > 0) {
 		outStrStat << setprecision(0) << (double)rss/1024/1024;
+#ifdef HAVE_LIBRRD
 		if (opt_rrd) rrdRSSVSZ_rss = (double)rss/1024/1024;
+#endif
 	}
 	long unsigned int vsize = this->getVsizeUsage();
 	if(vsize > 0) {
@@ -1535,7 +1583,9 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			outStrStat << '|';
 		}
 		outStrStat << setprecision(0) << (double)vsize/1024/1024;
+#ifdef HAVE_LIBRRD
 		if (opt_rrd) rrdRSSVSZ_vsize =(double)vsize/1024/1024;
+#endif
 	}
 	outStrStat << "]MB ";
 	pbStatString = outStr.str() + outStrStat.str();
@@ -1593,6 +1643,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 	sumPacketsSize[1] = sumPacketsSize[0];
 	sumPacketsSizeCompress[1] = sumPacketsSizeCompress[0];
 
+#ifdef HAVE_LIBRRD
 	if (opt_rrd) {
 		if (opt_rrd == 1) {
 			//CREATE rrd files:
@@ -1691,6 +1742,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			vm_rrd_update(filename, cmdUpdate.str().c_str());
 		}
 	}
+#endif
 }
 
 string PcapQueue::pcapDropCountStat() {

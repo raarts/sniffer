@@ -595,6 +595,7 @@ MYSQLINCLUDE
 MYSQLLIB
 MYSQLCXXFLAGS
 MYSQLCFLAGS
+LIBRRD
 LIBJSON_NAME
 LIBSSH
 LIBSNAPPY
@@ -660,6 +661,7 @@ with_odbc
 with_oggvorbis
 with_snappy
 with_ssh
+with_rrd
 with_mysql
 '
       ac_precious_vars='build_alias
@@ -1285,6 +1287,7 @@ Optional Packages:
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
   --without-ssh           disable support for ssh
+  --without-rrd           disable support for rrd
   --with-mysql=PATH path to mysql_config binary or mysql prefix dir
 
 Some influential environment variables:
@@ -3888,9 +3891,21 @@ else
 	LIBJSON_NAME="$LIBJSON_NAME"
 
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lrrd" >&5
-$as_echo_n "checking for main in -lrrd... " >&6; }
-if ${ac_cv_lib_rrd_main+:} false; then :
+
+# Check for librrd
+
+# Check whether --with-rrd was given.
+if test "${with_rrd+set}" = set; then :
+  withval=$with_rrd;
+else
+  with_rrd=yes
+fi
+
+LIBRRD=
+if test "x$with_rrd" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rrd_options_set in -lrrd" >&5
+$as_echo_n "checking for rrd_options_set in -lrrd... " >&6; }
+if ${ac_cv_lib_rrd_rrd_options_set+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -3898,35 +3913,52 @@ LIBS="-lrrd  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rrd_options_set ();
 int
 main ()
 {
-return main ();
+return rrd_options_set ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_rrd_main=yes
+  ac_cv_lib_rrd_rrd_options_set=yes
 else
-  ac_cv_lib_rrd_main=no
+  ac_cv_lib_rrd_rrd_options_set=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rrd_main" >&5
-$as_echo "$ac_cv_lib_rrd_main" >&6; }
-if test "x$ac_cv_lib_rrd_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBRRD 1
-_ACEOF
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rrd_rrd_options_set" >&5
+$as_echo "$ac_cv_lib_rrd_rrd_options_set" >&6; }
+if test "x$ac_cv_lib_rrd_rrd_options_set" = xyes; then :
+  LIBRRD="-lrrd -lrrd_threads"
 
-  LIBS="-lrrd $LIBS"
+
+$as_echo "#define HAVE_LIBRRD 1" >>confdefs.h
+
+               HAVE_LIBRRD_T=yes
 
 else
-  as_fn_error $? "Unable to find librrd library. apt-get install librrd-dev | yum install rrdtool-devel | or compile from source http://oss.oetiker.ch/rrdtool/doc/librrd.en.html" "$LINENO" 5
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find librrd library. apt-get install librrd-dev | yum install rrdtool-devel | or compile from source http://oss.oetiker.ch/rrdtool/doc/librrd.en.html
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+else
+  HAVE_LIBRRD_T=no
+
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lglib-2.0" >&5
@@ -5591,6 +5623,7 @@ tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
 oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
+rrd enabled                            : $HAVE_LIBRRD_T
 
 shared binary: run make
 static binary: run make static
@@ -5620,6 +5653,7 @@ tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
 oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
+rrd enabled                            : $HAVE_LIBRRD_T
 
 shared binary: run make
 static binary: run make static

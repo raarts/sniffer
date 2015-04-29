@@ -146,7 +146,27 @@ if test "x$LIBJSON_NAME" = "x"; then
 else
 	AC_SUBST([LIBJSON_NAME],["$LIBJSON_NAME"])
 fi
-AC_CHECK_LIB([rrd], [main], , AC_MSG_ERROR([Unable to find librrd library. apt-get install librrd-dev | yum install rrdtool-devel | or compile from source http://oss.oetiker.ch/rrdtool/doc/librrd.en.html]))
+
+# Check for librrd
+AC_ARG_WITH([rrd],
+            [AS_HELP_STRING([--without-rrd],
+              [disable support for rrd])],
+            [],
+            [with_rrd=yes])
+LIBRRD=
+AS_IF([test "x$with_rrd" != xno],
+      [AC_CHECK_LIB([rrd], [rrd_options_set],
+         [AC_SUBST([LIBRRD], ["-lrrd -lrrd_threads"])
+               AC_DEFINE([HAVE_LIBRRD], [1], [Define if you have librrd])
+               HAVE_LIBRRD_T=yes
+         ],
+         [AC_MSG_FAILURE(
+               [Unable to find librrd library. apt-get install librrd-dev | yum install rrdtool-devel | or compile from source http://oss.oetiker.ch/rrdtool/doc/librrd.en.html, or specify --without-rrd])
+         ])
+       ],
+       HAVE_LIBRRD_T=no
+     )
+
 AC_CHECK_LIB([glib-2.0], [main], , AC_MSG_ERROR([Unable to find libglib library. apt-get install  libglib2.0-dev | yum install glib2-devel]))
 AC_CHECK_LIB([xml2], [main], , AC_MSG_ERROR([Unable to find xml2 library. apt-get install libxml2-dev | yum install libxml2-devel]))
 
@@ -269,6 +289,7 @@ tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
 oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
+rrd enabled                            : $HAVE_LIBRRD_T
 
 shared binary: run make 
 static binary: run make static
