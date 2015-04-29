@@ -910,7 +910,7 @@ void SqlDb_mysql::clean() {
 	this->cleanFields();
 }
 
-
+#ifdef HAVE_LIBODBC
 SqlDb_odbc_bindBufferItem::SqlDb_odbc_bindBufferItem(SQLUSMALLINT colNumber, string fieldName, SQLSMALLINT dataType, SQLULEN columnSize, SQLHSTMT hStatement) {
 	this->colNumber = colNumber;
 	this->fieldName = fieldName;
@@ -1222,6 +1222,7 @@ void SqlDb_odbc::clean() {
 	this->disconnect();
 	this->cleanFields();
 }
+#endif
 
 void *MySqlStore_process_storing(void *storeProcess_addr) {
 	MySqlStore_process *storeProcess = (MySqlStore_process*)storeProcess_addr;
@@ -1813,12 +1814,14 @@ SqlDb *createSqlObject() {
 		if(cloud_host[0]) {
 			sqlDb->setCloudParameters(cloud_host, cloud_token);
 		}
+#ifdef HAVE_LIBODBC
 	} else if(isSqlDriver("odbc")) {
 		SqlDb_odbc *sqlDb_odbc = new FILE_LINE SqlDb_odbc();
 		sqlDb_odbc->setOdbcVersion(SQL_OV_ODBC3);
 		sqlDb_odbc->setSubtypeDb(odbc_driver);
 		sqlDb = sqlDb_odbc;
 		sqlDb->setConnectParameters(odbc_dsn, odbc_user, odbc_password);
+#endif
 	}
 	return(sqlDb);
 }
@@ -1914,9 +1917,11 @@ string _sqlEscapeString(const char *inputStr, int length, const char *typeDb) {
 	if(isTypeDb("mysql", typeDb)) {
 		escChars = escCharsMysql;
 		countEscChars = sizeof(escCharsMysql)/sizeof(escChar);
+#ifdef HAVE_LIBODBC
 	} else if(isTypeDb("odbc", typeDb)) {
 		escChars = escCharsOdbc;
 		countEscChars = sizeof(escCharsOdbc)/sizeof(escChar);
+#endif
 	}
 	if(!length) {
 		length = strlen(inputStr);
@@ -4096,7 +4101,7 @@ vector<string> SqlDb_mysql::getFederatedTables() {
 	return(rsltTables);
 }
 
-
+#ifdef HAVE_LIBODBC
 void SqlDb_odbc::createSchema(const char *host, const char *database, const char *user, const char *password) {
 	
 	this->query(
@@ -4762,6 +4767,7 @@ void SqlDb_odbc::checkDbMode() {
 
 void SqlDb_odbc::checkSchema() {
 }
+#endif
 
 void createMysqlPartitionsCdr() {
 	syslog(LOG_NOTICE, "create cdr partitions - begin");

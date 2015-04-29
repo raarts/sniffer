@@ -26,8 +26,25 @@ AC_CHECK_LIB([dl], [main], AC_SUBST([LIBLD],["-ldl"]), AC_MSG_NOTICE([Unable to 
 AC_CHECK_LIB([ltdl], [main])
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main])
-# FIXME: Replace `main' with a function in `-lodbc':
-AC_CHECK_LIB([odbc], [main], , AC_MSG_ERROR([Unable to find odbc library. Debian: apt-get install unixodbc-dev. Centos/Redhat: yum install unixODBC-devel]))
+# Check for ODBC, unless explicitly disabled.
+AC_ARG_WITH([odbc],
+            [AS_HELP_STRING([--without-odbc],
+              [disable support for odbc])],
+            [],
+            [with_odbc=yes])
+LIBODBC=
+AS_IF([test "x$with_odbc" != xno],
+      [AC_CHECK_LIB([odbc], [SQLAllocHandle],
+         [AC_SUBST([LIBODBC], ["-lodbc"])
+               AC_DEFINE([HAVE_LIBODBC], [1], [Define if you have libodbc])
+               HAVE_LIBODBC_T=yes
+         ],
+         [AC_MSG_FAILURE(
+               [Unable to find odbc library. Debian: apt-get install unixodbc-dev. Centos/Redhat: yum install unixODBC-devel, --without-odbc to disable])
+         ])
+       ],
+       HAVE_LIBODBC_T=no
+     )
 # FIXME: Replace `main' with a function in `-logg':
 AC_CHECK_LIB([ogg], [main], , AC_MSG_ERROR([Unable to find OGG library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel]))
 # FIXME: Replace `main' with a function in `-lpcap':
@@ -180,6 +197,7 @@ lzma compression enabled               : $HAVE_LIBLZMA_T
 ssh library enabled (cloud)            : $HAVE_LIBSSH_T
 gnutls library enabled (SIP TLS)       : $LIBGNUTLS_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
+odbc enabled                           : $HAVE_LIBODBC_T
 
 shared binary: run make 
 static binary: run make static

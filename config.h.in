@@ -27,7 +27,7 @@
 /* Define to 1 if you have the `mysqlclient' library (-lmysqlclient). */
 #undef HAVE_LIBMYSQLCLIENT
 
-/* Define to 1 if you have the `odbc' library (-lodbc). */
+/* Define if you have libodbc */
 #undef HAVE_LIBODBC
 
 /* Define to 1 if you have the `ogg' library (-logg). */

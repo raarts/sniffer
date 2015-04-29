@@ -878,6 +878,7 @@ int CustIpCache::connect() {
 	if(!this->okParams()) {
 		return(0);
 	}
+#ifdef HAVE_LIBODBC
 	if(!this->sqlDb) {
 		SqlDb_odbc *sqlDb_odbc = new FILE_LINE SqlDb_odbc();
 		sqlDb_odbc->setOdbcVersion(SQL_OV_ODBC3);
@@ -885,6 +886,7 @@ int CustIpCache::connect() {
 		this->sqlDb = sqlDb_odbc;
 		this->sqlDb->setConnectParameters(this->odbcDsn, this->odbcUser, this->odbcPassword);
 	}
+#endif
 	if(!this->sqlDbRadius && this->radiusHost.length()) {
 		SqlDb_mysql *sqlDb_mysql = new FILE_LINE SqlDb_mysql();
 		this->sqlDbRadius = sqlDb_mysql;
@@ -1171,6 +1173,7 @@ int CustPhoneNumberCache::connect() {
 	if(!this->okParams()) {
 		return(0);
 	}
+#ifdef HAVE_LIBODBC
 	if(!this->sqlDb) {
 		SqlDb_odbc *sqlDb_odbc = new FILE_LINE SqlDb_odbc();
 		sqlDb_odbc->setOdbcVersion(SQL_OV_ODBC3);
@@ -1178,6 +1181,7 @@ int CustPhoneNumberCache::connect() {
 		this->sqlDb = sqlDb_odbc;
 		this->sqlDb->setConnectParameters(this->odbcDsn, this->odbcUser, this->odbcPassword);
 	}
+#endif
 	return(this->sqlDb->connect());
 }
 

@@ -4,6 +4,7 @@
 #include <sql.h>
 #include "voipmonitor.h"
 
+#ifdef HAVE_LIBODBC
 #include "odbc.h"
 
 Odbc::Odbc() {
@@ -167,3 +168,4 @@ void Odbc::clearLastError() {
 		this->lastErrorString = NULL;
 	}
 }
+#endif // LIBODBC

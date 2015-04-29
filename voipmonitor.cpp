@@ -466,7 +466,6 @@ char get_customer_by_ip_odbc_driver[256];
 char get_customer_by_ip_query[1024];
 char get_customers_ip_query[1024];
 char get_customers_radius_name_query[1024];
-
 char get_customer_by_pn_sql_driver[256] = "odbc";
 char get_customer_by_pn_odbc_dsn[256];
 char get_customer_by_pn_odbc_user[256];
@@ -1961,6 +1960,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "mysqlpassword", NULL))) {
 		strncpy(mysql_password, value, sizeof(mysql_password));
 	}
+#ifdef HAVE_LIBODBC
 	if((value = ini.GetValue("general", "odbcdsn", NULL))) {
 		strncpy(odbc_dsn, value, sizeof(odbc_dsn));
 	}
@@ -1973,6 +1973,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "odbcdriver", NULL))) {
 		strncpy(odbc_driver, value, sizeof(odbc_driver));
 	}
+#endif
 	if((value = ini.GetValue("general", "cloud_host", NULL))) {
 		strncpy(cloud_host, value, sizeof(cloud_host));
 	}
@@ -2003,30 +2004,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "get_customer_by_ip_sql_driver", NULL))) {
 		strncpy(get_customer_by_ip_sql_driver, value, sizeof(get_customer_by_ip_sql_driver));
 	}
-	if((value = ini.GetValue("general", "get_customer_by_ip_odbc_dsn", NULL))) {
-		strncpy(get_customer_by_ip_odbc_dsn, value, sizeof(get_customer_by_ip_odbc_dsn));
-	}
-	if((value = ini.GetValue("general", "get_customer_by_ip_odbc_user", NULL))) {
-		strncpy(get_customer_by_ip_odbc_user, value, sizeof(get_customer_by_ip_odbc_user));
-	}
-	if((value = ini.GetValue("general", "get_customer_by_ip_odbc_password", NULL))) {
-		strncpy(get_customer_by_ip_odbc_password, value, sizeof(get_customer_by_ip_odbc_password));
-	}
-	if((value = ini.GetValue("general", "get_customer_by_ip_odbc_driver", NULL))) {
-		strncpy(get_customer_by_ip_odbc_driver, value, sizeof(get_customer_by_ip_odbc_driver));
-	}
-	if((value = ini.GetValue("general", "get_customer_by_ip_query", NULL))) {
-		strncpy(get_customer_by_ip_query, value, sizeof(get_customer_by_ip_query));
-	}
-	if((value = ini.GetValue("general", "get_customers_ip_query", NULL))) {
-		strncpy(get_customers_ip_query, value, sizeof(get_customers_ip_query));
-	}
-	if((value = ini.GetValue("general", "get_customers_radius_name_query", NULL))) {
-		strncpy(get_customers_radius_name_query, value, sizeof(get_customers_radius_name_query));
-	}
-	if((value = ini.GetValue("general", "get_customer_by_pn_sql_driver", NULL))) {
-		strncpy(get_customer_by_pn_sql_driver, value, sizeof(get_customer_by_pn_sql_driver));
-	}
+#ifdef HAVE_LIBODBC
 	if((value = ini.GetValue("general", "get_customer_by_pn_odbc_dsn", NULL))) {
 		strncpy(get_customer_by_pn_odbc_dsn, value, sizeof(get_customer_by_pn_odbc_dsn));
 	}
@@ -2039,6 +2017,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "get_customer_by_pn_odbc_driver", NULL))) {
 		strncpy(get_customer_by_pn_odbc_driver, value, sizeof(get_customer_by_pn_odbc_driver));
 	}
+#endif
 	if((value = ini.GetValue("general", "get_customers_pn_query", NULL))) {
 		strncpy(get_customers_pn_query, value, sizeof(get_customers_pn_query));
 	}
@@ -5664,7 +5643,8 @@ void test() {
 		get_customer_by_ip_odbc_dsn, 
 		get_customer_by_ip_odbc_user, 
 		get_customer_by_ip_odbc_password, 
-		get_customer_by_ip_odbc_driver);
+		get_customer_by_ip_odbc_driver
+	);
 	custIpCache->setQueryes(
 		get_customer_by_ip_query, 
 		get_customers_ip_query);
