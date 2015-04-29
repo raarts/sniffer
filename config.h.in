@@ -30,8 +30,8 @@
 /* Define if you have libodbc */
 #undef HAVE_LIBODBC
 
-/* Define to 1 if you have the `ogg' library (-logg). */
-#undef HAVE_LIBOGG
+/* Define if you have liboggvorbis */
+#undef HAVE_LIBOGGVORBIS
 
 /* Define to 1 if you have the `pcap' library (-lpcap). */
 #undef HAVE_LIBPCAP
@@ -53,9 +53,6 @@
 
 /* Define if using libtcmalloc */
 #undef HAVE_LIBTCMALLOC
-
-/* Define to 1 if you have the `vorbis' library (-lvorbis). */
-#undef HAVE_LIBVORBIS
 
 /* Define to 1 if you have the `vorbisenc' library (-lvorbisenc). */
 #undef HAVE_LIBVORBISENC

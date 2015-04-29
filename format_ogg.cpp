@@ -8,6 +8,10 @@
 #include <syslog.h>
 #include <unistd.h>
 
+#include "config.h"
+
+#ifdef HAVE_LIBOGGVORBIS
+
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
 
@@ -446,3 +450,5 @@ int ogg_mix(char *in1, char *in2, char *out, int stereo, int samplerate, double 
 
 	return 0;
 }
+#endif
+

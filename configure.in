@@ -45,9 +45,54 @@ AS_IF([test "x$with_odbc" != xno],
        ],
        HAVE_LIBODBC_T=no
      )
-# FIXME: Replace `main' with a function in `-logg':
-AC_CHECK_LIB([ogg], [main], , AC_MSG_ERROR([Unable to find OGG library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel]))
-# FIXME: Replace `main' with a function in `-lpcap':
+
+# Check for oggvorbis, unless explicitly disabled.
+AC_ARG_WITH([oggvorbis],
+            [AS_HELP_STRING([--without-oggvorbis],
+              [disable support for ogg vorbis])],
+            [],
+            [with_oggvorbis=yes])
+LIBOGG=
+AS_IF([test "x$with_oggvorbis" != xno],
+      [AC_CHECK_LIB([ogg], [ogg_stream_init], [ HAVE_LIBOGG_T=yes ],
+         [AC_MSG_FAILURE(
+               [Unable to find OGG library. Debian: apt-get install libogg-dev. Centos/Redhat: yum install libogg-devel, --without-ogg to disable])
+         ])
+       ],
+       HAVE_LIBOGG_T=no
+     )
+LIBVORBIS=
+AS_IF([test "x$with_oggvorbis" != xno],
+      [AC_CHECK_LIB([vorbis], [vorbis_comment_init], [ HAVE_LIBVORBIS_T=yes ],
+         [AC_MSG_FAILURE(
+               [Unable to find VORBIS library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libvorbis-devel])
+         ])
+       ],
+       HAVE_LIBVORBIS_T=no
+     )
+LIBVORBISENC=
+AS_IF([test "x$with_oggvorbis" != xno],
+      [AC_CHECK_LIB([vorbisenc], [vorbis_encode_init], [ HAVE_LIBVORBISENC_T=yes ],
+         [AC_MSG_FAILURE(
+               [Unable to find VORBIS library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libvorbis-devel])
+         ])
+       ],
+       HAVE_LIBVORBISENC_T=no
+     )
+
+if test "$HAVE_LIBOGG_T" = "yes" -a "$HAVE_LIBVORBIS_T" = "yes" -a "$HAVE_LIBVORBISENC_T" = "yes" 
+then
+  AC_SUBST([LIBOGGVORBIS], ["-logg -lvorbis -lvorbisenc"])
+  AC_DEFINE([HAVE_LIBOGGVORBIS], [1], [Define if you have liboggvorbis])
+  HAVE_LIBOGGVORBIS_T=yes
+else
+  HAVE_LIBOGGVORBIS_T=no
+fi
+
+# FIXME: Replace `main' with a function in `-lvorbisenc':
+AC_CHECK_LIB([vorbisenc], [main], ,AC_MSG_ERROR([Unable to find VORBISENC library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel]))
+
+# check for pcap
 AC_CHECK_LIB([pcap], [main], ,AC_MSG_ERROR([Unable to find libpcap library. Debian: apt-get install libpcap-dev. Centos/Redhat: yum install libpcap-devel]))
 # FIXME: Replace `main' with a function in `-lpthread':
 AC_CHECK_LIB([pthread], [main])
@@ -55,10 +100,6 @@ AC_CHECK_LIB([pthread], [main])
 AC_CHECK_LIB([rt], [main])
 # FIXME: Replace `main' with a function in `-lssl':
 #AC_CHECK_LIB([ssl], [main])
-# FIXME: Replace `main' with a function in `-lvorbis':
-AC_CHECK_LIB([vorbis], [main], ,AC_MSG_ERROR([Unable to find VORBIS library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel]))
-# FIXME: Replace `main' with a function in `-lvorbisenc':
-AC_CHECK_LIB([vorbisenc], [main], ,AC_MSG_ERROR([Unable to find VORBISENC library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel]))
 # FIXME: Replace `main' with a function in `-lz':
 AC_CHECK_LIB([snappy], [main], ,AC_MSG_ERROR([Unable to find snappy library. apt-get install libsnappy-dev | or compile from source: https://snappy.googlecode.com/files/snappy-1.1.0.tar.gz]))
 AC_CHECK_LIB([curl], [main], , AC_MSG_ERROR([Unable to find curl library. apt-get libcurl4-openssl-dev | yum curl-devel]))
@@ -198,6 +239,7 @@ ssh library enabled (cloud)            : $HAVE_LIBSSH_T
 gnutls library enabled (SIP TLS)       : $LIBGNUTLS_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
+oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 
 shared binary: run make 
 static binary: run make static

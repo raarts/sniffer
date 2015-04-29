@@ -597,6 +597,7 @@ MYSQLLIB
 MYSQLCXXFLAGS
 MYSQLCFLAGS
 LIBJSON_NAME
+LIBOGGVORBIS
 LIBODBC
 LIBLD
 SET_MAKE
@@ -655,6 +656,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_odbc
+with_oggvorbis
 with_mysql
 '
       ac_precious_vars='build_alias
@@ -1277,6 +1279,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --without-odbc          disable support for odbc
+  --without-oggvorbis     disable support for ogg vorbis
   --with-mysql=PATH path to mysql_config binary or mysql prefix dir
 
 Some influential environment variables:
@@ -3320,14 +3323,196 @@ else
   HAVE_LIBODBC_T=no
 
 fi
-# FIXME: Replace `main' with a function in `-logg':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -logg" >&5
-$as_echo_n "checking for main in -logg... " >&6; }
-if ${ac_cv_lib_ogg_main+:} false; then :
+
+# Check for oggvorbis, unless explicitly disabled.
+
+# Check whether --with-oggvorbis was given.
+if test "${with_oggvorbis+set}" = set; then :
+  withval=$with_oggvorbis;
+else
+  with_oggvorbis=yes
+fi
+
+LIBOGG=
+if test "x$with_oggvorbis" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ogg_stream_init in -logg" >&5
+$as_echo_n "checking for ogg_stream_init in -logg... " >&6; }
+if ${ac_cv_lib_ogg_ogg_stream_init+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-logg  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char ogg_stream_init ();
+int
+main ()
+{
+return ogg_stream_init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ogg_ogg_stream_init=yes
+else
+  ac_cv_lib_ogg_ogg_stream_init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ogg_ogg_stream_init" >&5
+$as_echo "$ac_cv_lib_ogg_ogg_stream_init" >&6; }
+if test "x$ac_cv_lib_ogg_ogg_stream_init" = xyes; then :
+   HAVE_LIBOGG_T=yes
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find OGG library. Debian: apt-get install libogg-dev. Centos/Redhat: yum install libogg-devel, --without-ogg to disable
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+else
+  HAVE_LIBOGG_T=no
+
+fi
+LIBVORBIS=
+if test "x$with_oggvorbis" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for vorbis_comment_init in -lvorbis" >&5
+$as_echo_n "checking for vorbis_comment_init in -lvorbis... " >&6; }
+if ${ac_cv_lib_vorbis_vorbis_comment_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lvorbis  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char vorbis_comment_init ();
+int
+main ()
+{
+return vorbis_comment_init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_vorbis_vorbis_comment_init=yes
+else
+  ac_cv_lib_vorbis_vorbis_comment_init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_vorbis_vorbis_comment_init" >&5
+$as_echo "$ac_cv_lib_vorbis_vorbis_comment_init" >&6; }
+if test "x$ac_cv_lib_vorbis_vorbis_comment_init" = xyes; then :
+   HAVE_LIBVORBIS_T=yes
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find VORBIS library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libvorbis-devel
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+else
+  HAVE_LIBVORBIS_T=no
+
+fi
+LIBVORBISENC=
+if test "x$with_oggvorbis" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for vorbis_encode_init in -lvorbisenc" >&5
+$as_echo_n "checking for vorbis_encode_init in -lvorbisenc... " >&6; }
+if ${ac_cv_lib_vorbisenc_vorbis_encode_init+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lvorbisenc  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char vorbis_encode_init ();
+int
+main ()
+{
+return vorbis_encode_init ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_vorbisenc_vorbis_encode_init=yes
+else
+  ac_cv_lib_vorbisenc_vorbis_encode_init=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_vorbisenc_vorbis_encode_init" >&5
+$as_echo "$ac_cv_lib_vorbisenc_vorbis_encode_init" >&6; }
+if test "x$ac_cv_lib_vorbisenc_vorbis_encode_init" = xyes; then :
+   HAVE_LIBVORBISENC_T=yes
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find VORBIS library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libvorbis-devel
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+else
+  HAVE_LIBVORBISENC_T=no
+
+fi
+
+if test "$HAVE_LIBOGG_T" = "yes" -a "$HAVE_LIBVORBIS_T" = "yes" -a "$HAVE_LIBVORBISENC_T" = "yes"
+then
+  LIBOGGVORBIS="-logg -lvorbis -lvorbisenc"
+
+
+$as_echo "#define HAVE_LIBOGGVORBIS 1" >>confdefs.h
+
+  HAVE_LIBOGGVORBIS_T=yes
+else
+  HAVE_LIBOGGVORBIS_T=no
+fi
+
+# FIXME: Replace `main' with a function in `-lvorbisenc':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lvorbisenc" >&5
+$as_echo_n "checking for main in -lvorbisenc... " >&6; }
+if ${ac_cv_lib_vorbisenc_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lvorbisenc  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3341,28 +3526,29 @@ return main ();
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_ogg_main=yes
+  ac_cv_lib_vorbisenc_main=yes
 else
-  ac_cv_lib_ogg_main=no
+  ac_cv_lib_vorbisenc_main=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ogg_main" >&5
-$as_echo "$ac_cv_lib_ogg_main" >&6; }
-if test "x$ac_cv_lib_ogg_main" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_vorbisenc_main" >&5
+$as_echo "$ac_cv_lib_vorbisenc_main" >&6; }
+if test "x$ac_cv_lib_vorbisenc_main" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBOGG 1
+#define HAVE_LIBVORBISENC 1
 _ACEOF
 
-  LIBS="-logg $LIBS"
+  LIBS="-lvorbisenc $LIBS"
 
 else
-  as_fn_error $? "Unable to find OGG library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel" "$LINENO" 5
+  as_fn_error $? "Unable to find VORBISENC library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel" "$LINENO" 5
 fi
 
-# FIXME: Replace `main' with a function in `-lpcap':
+
+# check for pcap
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lpcap" >&5
 $as_echo_n "checking for main in -lpcap... " >&6; }
 if ${ac_cv_lib_pcap_main+:} false; then :
@@ -3486,90 +3672,6 @@ fi
 
 # FIXME: Replace `main' with a function in `-lssl':
 #AC_CHECK_LIB([ssl], [main])
-# FIXME: Replace `main' with a function in `-lvorbis':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lvorbis" >&5
-$as_echo_n "checking for main in -lvorbis... " >&6; }
-if ${ac_cv_lib_vorbis_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lvorbis  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_vorbis_main=yes
-else
-  ac_cv_lib_vorbis_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_vorbis_main" >&5
-$as_echo "$ac_cv_lib_vorbis_main" >&6; }
-if test "x$ac_cv_lib_vorbis_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBVORBIS 1
-_ACEOF
-
-  LIBS="-lvorbis $LIBS"
-
-else
-  as_fn_error $? "Unable to find VORBIS library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel" "$LINENO" 5
-fi
-
-# FIXME: Replace `main' with a function in `-lvorbisenc':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lvorbisenc" >&5
-$as_echo_n "checking for main in -lvorbisenc... " >&6; }
-if ${ac_cv_lib_vorbisenc_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lvorbisenc  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_vorbisenc_main=yes
-else
-  ac_cv_lib_vorbisenc_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_vorbisenc_main" >&5
-$as_echo "$ac_cv_lib_vorbisenc_main" >&6; }
-if test "x$ac_cv_lib_vorbisenc_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBVORBISENC 1
-_ACEOF
-
-  LIBS="-lvorbisenc $LIBS"
-
-else
-  as_fn_error $? "Unable to find VORBISENC library. Debian: apt-get install libvorbis-dev. Centos/Redhat: yum install libogg-devel libvorbis-devel" "$LINENO" 5
-fi
-
 # FIXME: Replace `main' with a function in `-lz':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lsnappy" >&5
 $as_echo_n "checking for main in -lsnappy... " >&6; }
@@ -5481,6 +5583,7 @@ ssh library enabled (cloud)            : $HAVE_LIBSSH_T
 gnutls library enabled (SIP TLS)       : $LIBGNUTLS_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
+oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 
 shared binary: run make
 static binary: run make static
@@ -5508,6 +5611,7 @@ ssh library enabled (cloud)            : $HAVE_LIBSSH_T
 gnutls library enabled (SIP TLS)       : $LIBGNUTLS_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
+oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 
 shared binary: run make
 static binary: run make static

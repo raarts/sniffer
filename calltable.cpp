@@ -1271,9 +1271,11 @@ Call::convertRawToWav() {
 	case FORMAT_WAV:
 		snprintf(out, 1023, "%s/%s/%s.wav", dirname().c_str(), opt_newdir ? "AUDIO" : "", get_fbasename_safe());
 		break;
+#ifdef HAVE_LIBOGGVORBIS
 	case FORMAT_OGG:
 		snprintf(out, 1023, "%s/%s/%s.ogg", dirname().c_str(), opt_newdir ? "AUDIO" : "", get_fbasename_safe());
 		break;
+#endif
 	}
 	out[1023] = 0;
 
@@ -1734,6 +1736,7 @@ Call::convertRawToWav() {
 				wav_mix(wav1, wav0, out, samplerate, 0, opt_saveaudio_stereo);
 			}
 			break;
+#ifdef HAVE_LIBOGGVORBIS
 		case FORMAT_OGG:
 			if(!opt_saveaudio_reversestereo) {
 				ogg_mix(wav0, wav1, out, opt_saveaudio_stereo, samplerate, opt_saveaudio_oggquality, 0);
@@ -1741,6 +1744,7 @@ Call::convertRawToWav() {
 				ogg_mix(wav1, wav0, out, opt_saveaudio_stereo, samplerate, opt_saveaudio_oggquality, 0);
 			}
 			break;
+#endif
 		}
 		if(!sverb.noaudiounlink) unlink(wav0);
 		if(!sverb.noaudiounlink) unlink(wav1);
@@ -1750,9 +1754,11 @@ Call::convertRawToWav() {
 		case FORMAT_WAV:
 			wav_mix(wav0, NULL, out, samplerate, 0, opt_saveaudio_stereo);
 			break;
+#ifdef HAVE_LIBOGGVORBIS
 		case FORMAT_OGG:
 			ogg_mix(wav0, NULL, out, opt_saveaudio_stereo, samplerate, opt_saveaudio_oggquality, 0);
 			break;
+#endif
 		}
 		if(!sverb.noaudiounlink) unlink(wav0);
 	} else if(bdir == 1) {
@@ -1761,9 +1767,11 @@ Call::convertRawToWav() {
 		case FORMAT_WAV:
 			wav_mix(wav1, NULL, out, samplerate, 1, opt_saveaudio_stereo);
 			break;
+#ifdef HAVE_LIBOGGVORBIS
 		case FORMAT_OGG:
 			ogg_mix(wav1, NULL, out, opt_saveaudio_stereo, samplerate, opt_saveaudio_oggquality, 1);
 			break;
+#endif
 		}
 		if(!sverb.noaudiounlink) unlink(wav1);
 	}
