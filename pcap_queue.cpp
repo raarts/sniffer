@@ -33,7 +33,9 @@
 #include "rrd.h"
 #include "cleanspool.h"
 #include "ssldata.h"
+#ifdef ENABLE_TAR
 #include "tar.h"
+#endif
 
 
 #define TEST_DEBUG_PARAMS 0
@@ -1424,6 +1426,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			lastcachedirtransfered = cachedirtransfered;
 		}
 	}
+#ifdef ENABLE_TAR
 	if(opt_pcap_dump_tar) {
 		outStr << "tarQ[" << glob_tar_queued_files << "] ";
 		u_int64_t tarBufferSize = ChunkBuffer::getChunkBuffersSumsize();
@@ -1448,6 +1451,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			outStr << "%] ";
 		}
 	}
+#endif
 	ostringstream outStrStat;
 	outStrStat << fixed;
 	if(this->instancePcapHandle) {

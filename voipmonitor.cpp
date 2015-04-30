@@ -2485,6 +2485,7 @@ int eval_config(string inistr) {
 	   (value = ini.GetValue("general", "pcap_dump_asyncbuffer", NULL))) {
 		opt_pcap_dump_asyncwrite_maxsize = atoi(value);
 	}
+#ifdef ENABLE_TAR
 	if((value = ini.GetValue("general", "tar", NULL))) {
 		opt_pcap_dump_tar = yesno(value);
 	}
@@ -2575,6 +2576,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "tar_internal_graph_level", NULL))) {
 		opt_pcap_dump_tar_internal_gzip_graph_level = atoi(value);
 	}
+#endif
 	if((value = ini.GetValue("general", "defer_create_spooldir", NULL))) {
 		opt_defer_create_spooldir = yesno(value);
 	}
@@ -3212,7 +3214,9 @@ int main(int argc, char *argv[]) {
 #ifdef HAVE_LIBRRD
 	pthread_mutex_init(&vm_rrd_lock, NULL);
 #endif
+#ifdef ENABLE_TAR
 	pthread_mutex_init(&tartimemaplock, NULL);
+#endif
 	pthread_mutex_init(&terminate_packetbuffer_lock, NULL);
 
 	// if the system has more than one CPU enable threading
@@ -3820,10 +3824,12 @@ int main(int argc, char *argv[]) {
 	signal(SIGTERM,sigterm_handler);
 	signal(SIGCHLD,sigchld_handler);
 
+#ifdef ENABLE_TAR
 	if(opt_untar_gui_params) {
 		chdir(opt_chdir);
 		return(untar_gui(opt_untar_gui_params));
 	}
+#endif
 
 #ifdef HAVE_LIBRRD
 	if(opt_rrd && opt_read_from_file) {
@@ -4379,9 +4385,11 @@ int main(int argc, char *argv[]) {
 		daemonize();
 	}
 
+#ifdef ENABLE_TAR
 	if(opt_pcap_dump_tar) {
 		tarQueue = new FILE_LINE TarQueue;
 	}
+#endif
 	
 	if(opt_enable_fraud) {
 		initFraud();
@@ -4430,10 +4438,12 @@ int main(int argc, char *argv[]) {
 		}
 	};
 
+#ifdef ENABLE_TAR
 	// start tar dumper
 	if(opt_pcap_dump_tar) {
 		pthread_create(&tarqueuethread, NULL, TarQueueThread, NULL);
 	}
+#endif
 
 #ifdef HAVE_LIBSSH
 	if(ssh_host[0] != '\0') {
@@ -4586,6 +4596,7 @@ int main(int argc, char *argv[]) {
 		bogusDumper = new FILE_LINE BogusDumper(opt_bogus_dumper_path);
 	}
 	
+#ifdef ENABLE_TAR
 	if(opt_pcap_dump_tar && opt_fork) {
 		string maxSpoolDate = getMaxSpoolDate();
 		if(maxSpoolDate.length()) {
@@ -4594,6 +4605,7 @@ int main(int argc, char *argv[]) {
 			syslog(LOG_NOTICE, "reindex date %s completed", maxSpoolDate.c_str());
 		}
 	}
+#endif
 
 	if(opt_pcap_threaded) {
 		if(opt_pcap_queue) {
@@ -4903,7 +4915,9 @@ int main(int argc, char *argv[]) {
 	if (opt_fork){
 		unlink(opt_pidfile);
 	}
+#ifdef ENABLE_TAR
 	pthread_mutex_destroy(&tartimemaplock);
+#endif
 	pthread_mutex_destroy(&terminate_packetbuffer_lock);
 
 	extern TcpReassemblySip tcpReassemblySip;
@@ -4919,6 +4933,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
+#ifdef ENABLE_TAR
 	if(opt_pcap_dump_tar) {
 		if(sverb.chunk_buffer > 1) { 
 			cout << "start destroy tar queue" << endl << flush;
@@ -4929,6 +4944,7 @@ int main(int argc, char *argv[]) {
 			cout << "end destroy tar queue" << endl << flush;
 		}
 	}
+#endif
 
 	if(!(opt_pcap_threaded && opt_pcap_queue && 
 	     !opt_pcap_queue_receive_from_ip_port &&
@@ -5231,11 +5247,13 @@ void test_alloc_speed() {
 	}
 }
 
+#ifdef ENABLE_TAR
 void test_untar() {
 	Tar tar;
 	tar.tar_open("/var/spool/voipmonitor_local/2015-01-30/19/26/SIP/sip_2015-01-30-19-26.tar", O_RDONLY);
 	tar.tar_read("1309960312.pcap.*", "1309960312.pcap", 659493, "cdr");
 }
+#endif
 
 void test_http_dumper() {
 	HttpPacketsDumper dumper;
@@ -5352,9 +5370,11 @@ void test() {
 	case 5:
 		test_alloc_speed();
 		break;
+#ifdef ENABLE_TAR
 	case 6:
 		test_untar();
 		break;
+#endif
 	case 7: 
 		test_http_dumper(); 
 		break;

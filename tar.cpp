@@ -25,6 +25,8 @@
 #include <grp.h>
 #include <stdio.h>
 
+#ifdef ENABLE_TAR
+
 #ifdef FREEBSD
 #include <sys/uio.h>
 #include <sys/thr.h>
@@ -1661,3 +1663,6 @@ int untar_gui(const char *args) {
 	return(0);
  
 }
+
+#endif // ENABLE_TAR
+

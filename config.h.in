@@ -3,6 +3,9 @@
 /* Define if need Skinny protocol */
 #undef ENABLE_SKINNY
 
+/* Define if need tar writing */
+#undef ENABLE_TAR
+
 /* Define to 1 if you have the `c' library (-lc). */
 #undef HAVE_LIBC
 

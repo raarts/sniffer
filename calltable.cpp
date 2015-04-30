@@ -46,7 +46,9 @@
 #include "cleanspool.h"
 #include "regcache.h"
 #include "fraud.h"
+#ifdef ENABLE_TAR
 #include "tar.h"
+#endif
 
 #if HAVE_LIBTCMALLOC    
 #include <gperftools/malloc_extension.h>

@@ -8,6 +8,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AC_ARG_WITH([siptls], [AS_HELP_STRING([--without-siptls], [disable support for siptls])], [], [with_siptls=yes])
 AC_ARG_WITH([skinny], [AS_HELP_STRING([--without-skinny], [disable support for skinny])], [], [with_skinny=yes])
+AC_ARG_WITH([tar], [AS_HELP_STRING([--without-tar], [disable support for tar])], [], [with_tar=yes])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -300,6 +301,13 @@ else
 	ENABLE_SKINNY_T=no
 fi
 
+if test "x$with_tar" != xno ; then
+	AC_DEFINE([ENABLE_TAR], [1], [Define if need tar writing])
+	ENABLE_TAR_T=yes
+else
+	ENABLE_TAR_T=no
+fi
+
 
 AC_CONFIG_FILES([Makefile
                  simpleini/Makefile])
@@ -330,6 +338,7 @@ snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
+tar writing enabled                    : $ENABLE_TAR_T
 
 shared binary: run make 
 static binary: run make static

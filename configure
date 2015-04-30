@@ -661,6 +661,7 @@ ac_user_opts='
 enable_option_checking
 with_siptls
 with_skinny
+with_tar
 with_odbc
 with_oggvorbis
 with_snappy
@@ -1289,6 +1290,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --without-siptls        disable support for siptls
   --without-skinny        disable support for skinny
+  --without-tar           disable support for tar
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
@@ -1878,6 +1880,14 @@ if test "${with_skinny+set}" = set; then :
   withval=$with_skinny;
 else
   with_skinny=yes
+fi
+
+
+# Check whether --with-tar was given.
+if test "${with_tar+set}" = set; then :
+  withval=$with_tar;
+else
+  with_tar=yes
 fi
 
 
@@ -4353,6 +4363,15 @@ else
 	ENABLE_SKINNY_T=no
 fi
 
+if test "x$with_tar" != xno ; then
+
+$as_echo "#define ENABLE_TAR 1" >>confdefs.h
+
+	ENABLE_TAR_T=yes
+else
+	ENABLE_TAR_T=no
+fi
+
 
 ac_config_files="$ac_config_files Makefile simpleini/Makefile"
 
@@ -5661,6 +5680,7 @@ snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
+tar writing enabled                    : $ENABLE_TAR_T
 
 shared binary: run make
 static binary: run make static
@@ -5692,6 +5712,7 @@ snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
+tar writing enabled                    : $ENABLE_TAR_T
 
 shared binary: run make
 static binary: run make static

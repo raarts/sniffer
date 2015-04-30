@@ -42,7 +42,9 @@
 #include "manager.h"
 #include "fraud.h"
 #include "rrd.h"
+#ifdef ENABLE_TAR
 #include "tar.h"
+#endif
 #include "http.h"
 
 //#define BUFSIZE 1024
@@ -1307,6 +1309,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			return -1;
 		}
 		return 0;
+#ifdef ENABLE_TAR
 	} else if(strstr(buf, "getfile_in_tar") != NULL) {
 		bool zip = strstr(buf, "getfile_in_tar_zip");
 	 
@@ -1333,6 +1336,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			return -1;
 		}
 		return 0;
+#endif
 	} else if(strstr(buf, "getfile") != NULL) {
 		bool zip = strstr(buf, "getfile_zip");
 		

@@ -50,7 +50,9 @@
 #include "md5.h"
 #include "pcap_queue.h"
 #include "sql_db.h"
+#ifdef ENABLE_TAR
 #include "tar.h"
+#endif
 #include "filter_mysql.h"
 
 extern char mac[32];
@@ -72,7 +74,9 @@ extern char opt_chdir[1024];
 static char b2a[256];
 static char base64[64];
 
+#ifdef ENABLE_TAR
 extern TarQueue *tarQueue;
+#endif
 using namespace std;
 
 AsyncClose *asyncClose;
@@ -2415,6 +2419,7 @@ FileZipHandler::~FileZipHandler() {
 	if(this->compressStream) {
 		delete this->compressStream;
 	}
+#ifdef ENABLE_TAR
 	if(this->tar && !this->tarBufferCreated) {
 		decreaseTartimemap(this->time);
 		if(sverb.tar > 2) {
@@ -2422,9 +2427,11 @@ FileZipHandler::~FileZipHandler() {
 			       this->fileName.c_str(), this->time, this->time - this->time % TAR_MODULO_SECONDS);
 		}
 	}
+#endif
 }
 
 bool FileZipHandler::open(const char *fileName, int permission) {
+#ifdef ENABLE_TAR
 	if(this->tar) {
 		if(sverb.tar > 2) {
 			syslog(LOG_NOTICE, "FileZipHandler open: %s %i %i %s", 
@@ -2451,6 +2458,7 @@ bool FileZipHandler::open(const char *fileName, int permission) {
 			
 		}
 	}
+#endif
 	this->fileName = fileName;
 	this->permission = permission;
 	return(true);
@@ -2582,6 +2590,7 @@ void FileZipHandler::initCompress() {
 }
 
 void FileZipHandler::initTarbuffer(bool useFileZipHandlerCompress) {
+#ifdef ENABLE_TAR
 	this->tarBufferCreated = true;
 	this->tarBuffer = new FILE_LINE ChunkBuffer(this->time, 
 						    typeFile == pcap_sip ? 8 * 1024 : 
@@ -2625,6 +2634,7 @@ void FileZipHandler::initTarbuffer(bool useFileZipHandlerCompress) {
 	}
 	this->tarBuffer->setName(this->fileName.c_str());
 	tarQueue->add(this->fileName, this->time, this->tarBuffer);
+#endif
 }
 
 bool FileZipHandler::_open() {
