@@ -42,9 +42,6 @@ JSONCFLAGS = $(shell pkg-config --cflags @LIBJSON_NAME@)
 MYSQLLIB=@MYSQLLIB@
 MYSQLINC=@MYSQLINCLUDE@
 
-GLIBCFLAGS =$(shell pkg-config --cflags glib-2.0)
-GLIBLIB =$(shell pkg-config --libs glib-2.0)
-
 LIBLD=@LIBLD@
 LIBLZMA=@LIBLZMA@
 LIBSSH=@LIBSSH@
@@ -54,6 +51,11 @@ LIBOGGVORBIS=@LIBOGGVORBIS@
 LIBODBC=@LIBODBC@
 LIBSNAPPY=@LIBSNAPPY@
 LIBRRD=@LIBRRD@
+GLIBCFLAGS=@GLIBCFLAGS@
+GLIBLIB=@GLIBLIB@
+LIBGNUTLS=@LIBGNUTLS@
+LIBGNUTLSSTATIC=@LIBGNUTLSSTATIC@
+
 SHARED_LIBS = ${LIBLD} -lpthread -lpcap -lz ${LIBOGGVORBIS} ${LIBODBC} ${MYSQLLIB} -lrt ${LIBSNAPPY} -lcurl -lssl -lcrypto ${JSONLIB} ${LIBSSH} -lxml2 ${LIBRRD} ${LIBGNUTLS} @LIBTCMALLOC@ ${GLIBLIB} ${LIBLZMA}
 STATIC_LIBS = -static @LIBTCMALLOC@ ${LIBODBC} -lltdl ${LIBLD} -lrt -lz ${LIBSSH} -lcrypt -lm -lcurl -lssl -lcrypto -static-libstdc++ -static-libgcc -lpcap -lpthread ${MYSQLLIB} -lpthread -lz -lc ${LIBOGGVORBIS} -lrt ${LIBSNAPPY} ${JSONLIB} ${LIBRRD} -lxml2 ${GLIBLIB} -lz -ldbi -llzma ${LIBGNUTLSSTATIC} 
 INCLUDES =  -I/usr/local/include ${MYSQLINC} -I jitterbuffer/ ${JSONCFLAGS} ${GLIBCFLAGS}
