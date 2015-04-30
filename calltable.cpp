@@ -3794,12 +3794,14 @@ Calltable::cleanup( time_t currtime ) {
 			calls_queue.push_back(call);
 			unlock_calls_queue();
 			calls_listMAP.erase(callMAPIT++);
+#ifdef ENABLE_FRAUD
 			if(opt_enable_fraud && currtime) {
 				struct timeval tv_currtime;
 				tv_currtime.tv_sec = currtime;
 				tv_currtime.tv_usec = 0;
 				fraudEndCall(call, tv_currtime);
 			}
+#endif
 		} else {
 			++callMAPIT;
 		}

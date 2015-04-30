@@ -1,6 +1,8 @@
 #include <sstream>
 #include <syslog.h>
+#include "config.h"
 
+#ifdef ENABLE_FRAUD
 #include "fraud.h"
 #include "calltable.h"
 
@@ -1668,3 +1670,5 @@ bool isExistsFraudAlerts() {
 	delete sqlDb;
 	return(rslt);
 }
+#endif // ENABLE_FRAUD
+

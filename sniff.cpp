@@ -71,7 +71,9 @@ and insert them into Call class.
 #include "ip_frag.h"
 #include "regcache.h"
 #include "manager.h"
+#ifdef ENABLE_FRAUD
 #include "fraud.h"
+#endif
 
 extern MirrorIP *mirrorip;
 
@@ -207,7 +209,9 @@ extern regcache *regfailedcache;
 extern ManagerClientThreads ClientThreads;
 extern int opt_register_timeout;
 extern int opt_nocdr;
+#ifdef ENABLE_FRAUD
 extern int opt_enable_fraud;
+#endif
 extern int pcap_drop_flag;
 extern int opt_hide_message_content;
 extern int opt_remotepartyid;
@@ -1802,9 +1806,11 @@ Call *new_invite_register(bool is_ssl, int sip_method, char *data, int datalen, 
 				call->digest_username, call->digest_realm, call->register_expires);
 */
 		}
+#ifdef ENABLE_FRAUD
 		if(opt_enable_fraud) {
 			fraudBeginCall(call, header->ts);
 		}
+#endif
 		++counter_calls;
 		if(sip_method == INVITE) {
 			call->seeninvite = true;
@@ -2238,9 +2244,11 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 		}
 		
 		if(issip) {
+#ifdef ENABLE_FRAUD
 			if(opt_enable_fraud) {
 				fraudSipPacket(saddr, header->ts);
 			}
+#endif
 #if 0
 //this block was moved at the end so it will mirror only relevant SIP belonging to real calls 
 			if(sipSendSocket && !opt_sip_send_before_packetbuffer) {
@@ -2258,9 +2266,11 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 		switch(sip_method) {
 		case REGISTER:
 			counter_sip_register_packets++;
+#ifdef ENABLE_FRAUD
 			if(opt_enable_fraud) {
 				fraudRegister(saddr, header->ts);
 			}
+#endif
 			break;
 		case MESSAGE:
 			counter_sip_message_packets++;
@@ -2442,9 +2452,11 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 					// the expire can be also in contact header Contact: 79438652 <sip:6600006@192.168.10.202:1026>;expires=240
 					get_expires_from_contact(data, datalen, &call->register_expires);
 				}
+#ifdef ENABLE_FRAUD
 				if(opt_enable_fraud) {
 					fraudConnectCall(call, header->ts);
 				}
+#endif
 				if(verbosity > 3) syslog(LOG_DEBUG, "REGISTER OK Call-ID[%s]", call->call_id.c_str());
                                 s = gettag(data, datalen, "\nCSeq:", &l, &gettagLimitLen);
                                 if(l && strncmp(s, call->invitecseq, l) == 0) {
@@ -2487,9 +2499,11 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 				}
 			}
 			if(call->regstate && !call->regresponse) {
+#ifdef ENABLE_FRAUD
 				if(opt_enable_fraud) {
 					fraudRegisterResponse(call->sipcallerip[0], call->first_packet_time * 1000000ull + call->first_packet_usec);
 				}
+#endif
 				call->regresponse = true;
 			}
 			if(call->msgcount > 20) {
@@ -2678,9 +2692,11 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 					}
 					if(verbosity > 2)
 						syslog(LOG_NOTICE, "Seen bye\n");
+#ifdef ENABLE_FRAUD
 					if(opt_enable_fraud) {
 						fraudSeenByeCall(call, header->ts);
 					}
+#endif
 				}
 				// save who hanged up 
 				if(call->sipcallerip[0] == saddr) {
@@ -2737,9 +2753,11 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 						call->seeninviteok = true;
 						if(!call->connect_time) {
 							call->connect_time = header->ts.tv_sec;
+#ifdef ENABLE_FRAUD
 							if(opt_enable_fraud) {
 								fraudConnectCall(call, header->ts);
 							}
+#endif
 						}
 						if(opt_update_dstnum_onanswer &&
 						   !call->updateDstnumOnAnswer &&

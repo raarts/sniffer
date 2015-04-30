@@ -40,7 +40,9 @@
 #include "cleanspool.h"
 #include "pcap_queue.h"
 #include "manager.h"
+#ifdef ENABLE_FRAUD
 #include "fraud.h"
+#endif
 #include "rrd.h"
 #ifdef ENABLE_TAR
 #include "tar.h"
@@ -1268,6 +1270,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			return -1;
 		}
 		return 0;
+#ifdef ENABLE_FRAUD
 	} else if(strstr(buf, "fraud_refresh") != NULL) {
 		refreshFraud();
 		if ((size = sendvm(client, sshchannel, "reload ok", 9, 0)) == -1){
@@ -1275,6 +1278,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			return -1;
 		}
 		return 0;
+#endif
 	} else if(strstr(buf, "custom_headers_refresh") != NULL) {
 		extern CustomHeaders *custom_headers_cdr;
 		extern CustomHeaders *custom_headers_message;

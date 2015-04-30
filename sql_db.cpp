@@ -17,7 +17,9 @@
 #include "tools.h"
 
 #include "sql_db.h"
+#ifdef ENABLE_FRAUD
 #include "fraud.h"
+#endif
 #include "calltable.h"
 
 
@@ -3110,6 +3112,7 @@ void SqlDb_mysql::createSchema(const char *host, const char *database, const cha
 			""));
 	}
 
+#ifdef ENABLE_FRAUD
 	if(opt_enable_fraud) {
 	this->query(
 	"CREATE TABLE IF NOT EXISTS `cache_number_location` (\
@@ -3127,6 +3130,7 @@ void SqlDb_mysql::createSchema(const char *host, const char *database, const cha
 	) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 	this->createTable("fraud_alert_info");
 	}
+#endif
 	
 	if(!federated) {
 	//BEGIN ALTER TABLES
@@ -3249,12 +3253,14 @@ void SqlDb_mysql::createSchema(const char *host, const char *database, const cha
 			ADD `remove_at` date default NULL;" << endl;
 
 	//10.0.5
+#ifdef ENABLE_FRAUD
 	if(opt_enable_fraud) {
 	outStrAlter << "ALTER TABLE cache_number_location\
 			ADD `number_ip` int unsigned DEFAULT NULL AFTER number,\
 			DROP PRIMARY KEY,\
 			ADD PRIMARY KEY (`number`, `number_ip`);" << endl;
 	}
+#endif
 	
 	// drop old cdr trigger
 	outStrAlter << "drop trigger if exists cdr_bi;" << endl;

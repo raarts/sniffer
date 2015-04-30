@@ -75,7 +75,9 @@
 #include "cleanspool.h"
 #include "regcache.h"
 #include "config_mysql.h"
+#ifdef ENABLE_FRAUD
 #include "fraud.h"
+#endif
 #ifdef HAVE_LIBRRD
 #include "rrd.h"
 #endif
@@ -638,7 +640,9 @@ int opt_mysqlstore_max_threads_ipacc_agreg2 = 3;
 int opt_mysqlstore_limit_queue_register = 1000000;
 
 char opt_curlproxy[256] = "";
+#ifdef ENABLE_FRAUD
 int opt_enable_fraud = 1;
+#endif
 char opt_local_country_code[10] = "local";
 
 map<string, string> hosts;
@@ -2423,9 +2427,11 @@ int eval_config(string inistr) {
 		strncpy(opt_curlproxy, value, sizeof(opt_curlproxy));
 	}
 	
+#ifdef ENABLE_FRAUD
 	if((value = ini.GetValue("general", "enable_fraud", NULL))) {
 		opt_enable_fraud = yesno(value);
 	}
+#endif
 	if((value = ini.GetValue("general", "local_country_code", NULL))) {
 		strncpy(opt_local_country_code, value, sizeof(opt_local_country_code));
 	}
@@ -4391,9 +4397,11 @@ int main(int argc, char *argv[]) {
 	}
 #endif
 	
+#ifdef ENABLE_FRAUD
 	if(opt_enable_fraud) {
 		initFraud();
 	}
+#endif
 	
 	if(opt_ipaccount) {
 		ipaccStartThread();
@@ -4901,9 +4909,11 @@ int main(int argc, char *argv[]) {
 		sipheaderfilter = NULL;
 	}
 	
+#ifdef ENABLE_FRAUD
 	if(opt_enable_fraud) {
 		termFraud();
 	}
+#endif
 	if(SafeAsyncQueue_base::isRunTimerThread()) {
 		SafeAsyncQueue_base::stopTimerThread(true);
 	}
@@ -5080,7 +5090,9 @@ void *readdump_libpcap_thread_fce(void *handle) {
 
 
 #include "rqueue.h"
+#ifdef ENABLE_FRAUD
 #include "fraud.h"
+#endif
 #include <regex.h>
 
 struct XX {
@@ -5092,6 +5104,7 @@ struct XX {
 	int b;
 };
 
+#ifdef ENABLE_FRAUD
 void test_search_country_by_number() {
 	CheckInternational *ci = new FILE_LINE CheckInternational();
 	ci->setInternationalMinLength(9);
@@ -5115,6 +5128,7 @@ void test_geoip() {
 	cout << ipc->getCountry(htonl(ips.s_addr)) << endl;
 	delete ipc;
 }
+#endif
 
 void test_filebuffer() {
 	int maxFiles = 1000;
@@ -5315,6 +5329,7 @@ void test() {
  
 	switch(opt_test) {
 	 
+#ifdef ENABLE_FRAUD
 	case 1: {
 		//test_search_country_by_number();
 	 
@@ -5329,6 +5344,7 @@ void test() {
 		test_geoip();
 		cout << "---------" << endl;
 	} break;
+#endif
 	case 2: {
 		for(int i = 0; i < 10; i++) {
 			sleep(1);
@@ -5348,9 +5364,11 @@ void test() {
 	case 3: {
 		char *pointToSepOptTest = strchr(opt_test_str, '/');
 		if(pointToSepOptTest) {
+#ifdef ENABLE_FRAUD
 			initFraud();
 			extern GeoIP_country *geoIP_country;
 			cout << geoIP_country->getCountry(pointToSepOptTest + 1) << endl;
+#endif
 		}
 	} break;
 	case 4: {

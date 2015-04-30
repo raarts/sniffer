@@ -662,6 +662,7 @@ enable_option_checking
 with_siptls
 with_skinny
 with_tar
+with_fraud
 with_odbc
 with_oggvorbis
 with_snappy
@@ -1291,6 +1292,7 @@ Optional Packages:
   --without-siptls        disable support for siptls
   --without-skinny        disable support for skinny
   --without-tar           disable support for tar
+  --without-fraud         disable support for fraud detection
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
@@ -1888,6 +1890,14 @@ if test "${with_tar+set}" = set; then :
   withval=$with_tar;
 else
   with_tar=yes
+fi
+
+
+# Check whether --with-fraud was given.
+if test "${with_fraud+set}" = set; then :
+  withval=$with_fraud;
+else
+  with_fraud=yes
 fi
 
 
@@ -4372,6 +4382,14 @@ else
 	ENABLE_TAR_T=no
 fi
 
+if test "x$with_fraud" != xno ; then
+
+$as_echo "#define ENABLE_FRAUD 1" >>confdefs.h
+
+	ENABLE_FRAUD_T=yes
+else
+	ENABLE_FRAUD_T=no
+fi
 
 ac_config_files="$ac_config_files Makefile simpleini/Makefile"
 
@@ -5681,6 +5699,7 @@ rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
+fraud detection enabled                : $ENABLE_FRAUD_T
 
 shared binary: run make
 static binary: run make static
@@ -5713,6 +5732,7 @@ rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
+fraud detection enabled                : $ENABLE_FRAUD_T
 
 shared binary: run make
 static binary: run make static
