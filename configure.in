@@ -238,7 +238,16 @@ fi
 AC_CHECK_LIB([mysqlclient], [main], , AC_MSG_ERROR([Unable to find libmysqlclient. apt-get install libmysqlclient-dev | yum install mysql-devel | pkg install mysql56-client]))
 
 AC_CHECK_LIB([z], [main], , AC_MSG_ERROR([Unable to find libz. apt-get install zlib1g-dev | yum install zlib-devel]))
-AC_CHECK_LIB([lzma], [main], HAVE_LIBLZMA=1, AC_MSG_NOTICE([Unable to find lzma. apt-get install liblzma-dev | yum install lzma-devel]))
+
+# Check for liblzma
+AS_IF([test "x$with_liblzma" != xno],
+      [AC_CHECK_LIB([lzma], [lzma_init], [ HAVE_LIBLZMA=1 ],
+         [AC_MSG_FAILURE(
+               [Unable to find lzma. apt-get install liblzma-dev | yum install lzma-devel])
+         ])
+       ]
+     )
+
 #AC_CHECK_LIB([tcmalloc_minimal], [tc_malloc], HAVE_LIBTCMALLOC=1, AC_MSG_NOTICE([Unable to find tcmalloc_minimal library which speeds up threads by 10%. The library is optional: apt-get install libtcmalloc-minimal4 or compile from source https://code.google.com/p/gperftools/]))
 
 HAVE_LIBLZMA_T=no

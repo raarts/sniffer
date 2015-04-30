@@ -4240,9 +4240,12 @@ else
   as_fn_error $? "Unable to find libz. apt-get install zlib1g-dev | yum install zlib-devel" "$LINENO" 5
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -llzma" >&5
-$as_echo_n "checking for main in -llzma... " >&6; }
-if ${ac_cv_lib_lzma_main+:} false; then :
+
+# Check for liblzma
+if test "x$with_liblzma" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for lzma_init in -llzma" >&5
+$as_echo_n "checking for lzma_init in -llzma... " >&6; }
+if ${ac_cv_lib_lzma_lzma_init+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -4250,31 +4253,44 @@ LIBS="-llzma  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char lzma_init ();
 int
 main ()
 {
-return main ();
+return lzma_init ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_lzma_main=yes
+  ac_cv_lib_lzma_lzma_init=yes
 else
-  ac_cv_lib_lzma_main=no
+  ac_cv_lib_lzma_lzma_init=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lzma_main" >&5
-$as_echo "$ac_cv_lib_lzma_main" >&6; }
-if test "x$ac_cv_lib_lzma_main" = xyes; then :
-  HAVE_LIBLZMA=1
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lzma_lzma_init" >&5
+$as_echo "$ac_cv_lib_lzma_lzma_init" >&6; }
+if test "x$ac_cv_lib_lzma_lzma_init" = xyes; then :
+   HAVE_LIBLZMA=1
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: Unable to find lzma. apt-get install liblzma-dev | yum install lzma-devel" >&5
-$as_echo "$as_me: Unable to find lzma. apt-get install liblzma-dev | yum install lzma-devel" >&6;}
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Unable to find lzma. apt-get install liblzma-dev | yum install lzma-devel
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
+
+
 fi
 
 #AC_CHECK_LIB([tcmalloc_minimal], [tc_malloc], HAVE_LIBTCMALLOC=1, AC_MSG_NOTICE([Unable to find tcmalloc_minimal library which speeds up threads by 10%. The library is optional: apt-get install libtcmalloc-minimal4 or compile from source https://code.google.com/p/gperftools/]))
