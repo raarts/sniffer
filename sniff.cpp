@@ -2126,6 +2126,7 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 		process_packet__last_destroy_calls = header->ts.tv_sec;
 	}
 
+#ifdef ENABLE_SKINNY
 	// check if the packet is SKINNY
 	if(istcp && opt_skinny && (source == 2000 || dest == 2000)) {
 		handle_skinny(header, packet, saddr, source, daddr, dest, data, datalen, dataoffset,
@@ -2137,6 +2138,7 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 		}
 		return NULL;
 	}
+#endif
 
 	// check if the packet is SIP ports or SKINNY ports
 	if(sipportmatrix[source] || sipportmatrix[dest] || forceSip) {

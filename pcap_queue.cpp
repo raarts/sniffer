@@ -1592,6 +1592,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 	pbCountPacketDrop = this->instancePcapHandle ?
 				this->instancePcapHandle->getCountPacketDrop() :
 				this->getCountPacketDrop();
+#ifdef ENABLE_SKINNY
 	if(sverb.skinny) {
 		extern u_int64_t _handle_skinny_counter_all;
 		extern u_int64_t _handle_skinny_counter_next_iterate;
@@ -1601,6 +1602,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 			   << _handle_skinny_counter_next_iterate
 			   << "] ";
 	}
+#endif
 	if(DEBUG_VERBOSE || verbosityE > 1) {
 		if(DEBUG_VERBOSE) {
 			cout << outStrStat.str() << endl;

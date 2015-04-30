@@ -7,6 +7,7 @@ AC_CONFIG_SRCDIR([voipmonitor.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 AC_ARG_WITH([siptls], [AS_HELP_STRING([--without-siptls], [disable support for siptls])], [], [with_siptls=yes])
+AC_ARG_WITH([skinny], [AS_HELP_STRING([--without-skinny], [disable support for skinny])], [], [with_skinny=yes])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -283,6 +284,14 @@ fi
 #AC_FUNC_STRTOD
 #AC_CHECK_FUNCS([gethostbyname gettimeofday inet_ntoa memmove memset mkdir mkfifo pow select setenv setlocale socket sqrt strcasecmp strchr strdup strerror strncasecmp strndup strstr strtol])
 
+if test "x$with_skinny" != xno ; then
+	AC_DEFINE([ENABLE_SKINNY], [1], [Define if need Skinny protocol])
+	ENABLE_SKINNY_T=yes
+else
+	ENABLE_SKINNY_T=no
+fi
+
+
 AC_CONFIG_FILES([Makefile
                  simpleini/Makefile])
 
@@ -311,6 +320,7 @@ oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
+Skinny decoding enabled                : $ENABLE_SKINNY_T
 
 shared binary: run make 
 static binary: run make static

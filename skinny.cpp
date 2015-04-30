@@ -32,7 +32,7 @@
 #include "rtp.h"
 #include "skinny.h"
 
-
+#ifdef ENABLE_SKINNY
 
 extern Calltable *calltable;
 extern volatile int calls_counter;
@@ -8347,3 +8347,5 @@ AST_MODULE_INFO(ASTERISK_GPL_KEY, AST_MODFLAG_LOAD_ORDER, "Skinny Client Control
 		.load_pri = AST_MODPRI_CHANNEL_DRIVER,
 );
 #endif
+#endif // ENABLE_SKINNY
+

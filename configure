@@ -660,6 +660,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_siptls
+with_skinny
 with_odbc
 with_oggvorbis
 with_snappy
@@ -1287,6 +1288,7 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --without-siptls        disable support for siptls
+  --without-skinny        disable support for skinny
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
@@ -1868,6 +1870,14 @@ if test "${with_siptls+set}" = set; then :
   withval=$with_siptls;
 else
   with_siptls=yes
+fi
+
+
+# Check whether --with-skinny was given.
+if test "${with_skinny+set}" = set; then :
+  withval=$with_skinny;
+else
+  with_skinny=yes
 fi
 
 
@@ -4098,8 +4108,6 @@ $as_echo "#define HAVE_LIBGLIB 1" >>confdefs.h
           HAVE_SIPTLS_T=yes
 fi
 
-#AC_CHECK_LIB([xml2], [main], , AC_MSG_ERROR([Unable to find xml2 library. apt-get install libxml2-dev | yum install libxml2-devel]))
-
 # Check for MySQL libraries (or MariaDB)
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mysql_config executable" >&5
 $as_echo_n "checking for mysql_config executable... " >&6; }
@@ -4319,6 +4327,16 @@ fi
 #AC_FUNC_STRNLEN
 #AC_FUNC_STRTOD
 #AC_CHECK_FUNCS([gethostbyname gettimeofday inet_ntoa memmove memset mkdir mkfifo pow select setenv setlocale socket sqrt strcasecmp strchr strdup strerror strncasecmp strndup strstr strtol])
+
+if test "x$with_skinny" != xno ; then
+
+$as_echo "#define ENABLE_SKINNY 1" >>confdefs.h
+
+	ENABLE_SKINNY_T=yes
+else
+	ENABLE_SKINNY_T=no
+fi
+
 
 ac_config_files="$ac_config_files Makefile simpleini/Makefile"
 
@@ -5626,6 +5644,7 @@ oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
+Skinny decoding enabled                : $ENABLE_SKINNY_T
 
 shared binary: run make
 static binary: run make static
@@ -5656,6 +5675,7 @@ oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T
 SIP TLS decoding enabled               : $HAVE_SIPTLS_T
+Skinny decoding enabled                : $ENABLE_SKINNY_T
 
 shared binary: run make
 static binary: run make static
