@@ -199,7 +199,7 @@ if test "x$HAVE_LIBGNUTLS" = "x1" -a "x$HAVE_LIBGLIB" = "x1" ; then
           HAVE_SIPTLS_T=yes
 fi
 
-AC_CHECK_LIB([xml2], [main], , AC_MSG_ERROR([Unable to find xml2 library. apt-get install libxml2-dev | yum install libxml2-devel]))
+#AC_CHECK_LIB([xml2], [main], , AC_MSG_ERROR([Unable to find xml2 library. apt-get install libxml2-dev | yum install libxml2-devel]))
 
 # Check for MySQL libraries (or MariaDB)
 AC_MSG_CHECKING(for mysql_config executable)

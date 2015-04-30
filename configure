@@ -4098,47 +4098,7 @@ $as_echo "#define HAVE_LIBGLIB 1" >>confdefs.h
           HAVE_SIPTLS_T=yes
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lxml2" >&5
-$as_echo_n "checking for main in -lxml2... " >&6; }
-if ${ac_cv_lib_xml2_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxml2  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_xml2_main=yes
-else
-  ac_cv_lib_xml2_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xml2_main" >&5
-$as_echo "$ac_cv_lib_xml2_main" >&6; }
-if test "x$ac_cv_lib_xml2_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBXML2 1
-_ACEOF
-
-  LIBS="-lxml2 $LIBS"
-
-else
-  as_fn_error $? "Unable to find xml2 library. apt-get install libxml2-dev | yum install libxml2-devel" "$LINENO" 5
-fi
-
+#AC_CHECK_LIB([xml2], [main], , AC_MSG_ERROR([Unable to find xml2 library. apt-get install libxml2-dev | yum install libxml2-devel]))
 
 # Check for MySQL libraries (or MariaDB)
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mysql_config executable" >&5
