@@ -241,7 +241,7 @@ AC_CHECK_LIB([z], [main], , AC_MSG_ERROR([Unable to find libz. apt-get install z
 
 # Check for liblzma
 AS_IF([test "x$with_liblzma" != xno],
-      [AC_CHECK_LIB([lzma], [lzma_init], [ HAVE_LIBLZMA=1 ],
+      [AC_CHECK_LIB([lzma], [lzma_code], [ HAVE_LIBLZMA=1 ],
          [AC_MSG_FAILURE(
                [Unable to find lzma. apt-get install liblzma-dev | yum install lzma-devel])
          ])

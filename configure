@@ -4243,9 +4243,9 @@ fi
 
 # Check for liblzma
 if test "x$with_liblzma" != xno; then :
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for lzma_init in -llzma" >&5
-$as_echo_n "checking for lzma_init in -llzma... " >&6; }
-if ${ac_cv_lib_lzma_lzma_init+:} false; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for lzma_code in -llzma" >&5
+$as_echo_n "checking for lzma_code in -llzma... " >&6; }
+if ${ac_cv_lib_lzma_lzma_code+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -4259,27 +4259,27 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char lzma_init ();
+char lzma_code ();
 int
 main ()
 {
-return lzma_init ();
+return lzma_code ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_lzma_lzma_init=yes
+  ac_cv_lib_lzma_lzma_code=yes
 else
-  ac_cv_lib_lzma_lzma_init=no
+  ac_cv_lib_lzma_lzma_code=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lzma_lzma_init" >&5
-$as_echo "$ac_cv_lib_lzma_lzma_init" >&6; }
-if test "x$ac_cv_lib_lzma_lzma_init" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_lzma_lzma_code" >&5
+$as_echo "$ac_cv_lib_lzma_lzma_code" >&6; }
+if test "x$ac_cv_lib_lzma_lzma_code" = xyes; then :
    HAVE_LIBLZMA=1
 else
   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
