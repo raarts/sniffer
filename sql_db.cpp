@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdarg.h>
 #include <netdb.h>
+#include "config.h"
 #ifdef ENABLE_MYSQL
 #include <mysqld_error.h>
 #include <errmsg.h>
