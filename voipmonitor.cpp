@@ -3165,6 +3165,7 @@ PcapQueue_readFromFifo *pcapQueueQ;
 
 int main(int argc, char *argv[]) {
 
+#ifdef ENABLE_HEAPSAFE
 	extern unsigned int HeapSafeCheck;
 	bool memoryStatInArg = false;
 	bool memoryStatExInArg = false;
@@ -3200,6 +3201,7 @@ int main(int argc, char *argv[]) {
 			sverb.memory_stat = true;
 		}
 	}
+#endif
 
 	alaw_init();
 	ulaw_init();
@@ -4743,9 +4745,11 @@ int main(int argc, char *argv[]) {
 						pthread_mutex_lock(&terminate_packetbuffer_lock);
 						pcapQueueQ->pcapStat(verbosityE > 0 ? 1 : _pcap_stat_period);
 						pthread_mutex_unlock(&terminate_packetbuffer_lock);
+#ifdef ENABLE_HEAPSAFE
 						if(sverb.memory_stat_log) {
 							printMemoryStat();
 						}
+#endif
 						if(tcpReassemblyHttp) {
 							tcpReassemblyHttp->setDoPrintContent();
 						}
@@ -5085,10 +5089,12 @@ int main(int argc, char *argv[]) {
 	
 	_parse_packet_global.free();
 	
+#ifdef ENABLE_HEAPSAFE
 	if(sverb.memory_stat) {
 		cout << "memory stat at end" << endl;
 		printMemoryStat(true);
 	}
+#endif
 }
 
 void terminate_packetbuffer() {
@@ -5832,7 +5838,7 @@ void test() {
 	//exit(0);
 }
 
-
+#ifdef ENABLE_HEAPSAFE
 extern "C"{
 void __cyg_profile_func_enter(void *this_fn, void *call_site) __attribute__((no_instrument_function));
 void __cyg_profile_func_enter(void *this_fn, void *call_site) {
@@ -5861,7 +5867,7 @@ void __cyg_profile_func_exit(void *this_fn, void *call_site) {
 	--threadStackSize[tid];
 }
 }
-
+#endif
 
 //#define HAVE_LIBJEMALLOC
 

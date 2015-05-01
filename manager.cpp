@@ -1825,12 +1825,14 @@ getwav:
 			cerr << "Error sending data to client" << endl;
 			return -1;
 		}
+#ifdef ENABLE_HEAPSAFE
 	} else if(strstr(buf, "memory_stat") != NULL) {
 		string rsltMemoryStat = getMemoryStat();
 		if ((size = sendvm(client, sshchannel, rsltMemoryStat.c_str(), rsltMemoryStat.length(), 0)) == -1){
 			cerr << "Error sending data to client" << endl;
 			return -1;
 		}
+#endif
 	} else if(strstr(buf, "jemalloc_stat") != NULL) {
 		string jeMallocStat(bool full);
 		string rsltMemoryStat = jeMallocStat(strstr(buf, "full"));

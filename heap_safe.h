@@ -20,7 +20,7 @@
 
 #include "tools_inline.h"
 
-
+#ifdef ENABLE_HEAPSAFE
 #define HEAPSAFE_ALLOC_RESERVE			20
 #define HEAPSAFE_SAFE_ALLOC_RESERVE		4
 
@@ -84,10 +84,11 @@ struct sHeapSafeMemoryControlBlockEx : public sHeapSafeMemoryControlBlock {
 void HeapSafeAllocError(int error);
 void HeapSafeMemcpyError(const char *errorString, const char *file = NULL, unsigned int line = 0);
 void HeapSafeMemsetError(const char *errorString, const char *file = NULL, unsigned int line = 0);
-
+#endif
 
 inline void *memcpy_heapsafe(void *destination, const void *destination_begin, const void *source, const void *source_begin, size_t length,
 			     const char *file = NULL, unsigned int line = 0) {
+#ifdef ENABLE_HEAPSAFE
 	extern unsigned int HeapSafeCheck;
 	if(HeapSafeCheck & _HeapSafeErrorBeginEnd) {
 		bool error = false;
@@ -132,6 +133,7 @@ inline void *memcpy_heapsafe(void *destination, const void *destination_begin, c
 			}
 		}
 	}
+#endif
 	return(memcpy(destination, source, length));
 }
 
@@ -143,6 +145,7 @@ inline void *memcpy_heapsafe(void *destination, const void *source, size_t lengt
 
 inline void *memset_heapsafe(void *ptr, void *ptr_begin, int value, size_t length,
 			     const char *file = NULL, unsigned int line = 0) {
+#ifdef ENABLE_HEAPSAFE
 	extern unsigned int HeapSafeCheck;
 	if(HeapSafeCheck & _HeapSafeErrorBeginEnd) {
 		bool error = false;
@@ -168,6 +171,7 @@ inline void *memset_heapsafe(void *ptr, void *ptr_begin, int value, size_t lengt
 			}
 		}
 	}
+#endif
 	return(memset(ptr, value, length));
 }
 
@@ -177,10 +181,11 @@ inline void *memset_heapsafe(void *ptr, int value, size_t length,
 			       file, line));
 }
 
-
+#ifdef ENABLE_HEAPSAFE
 std::string getMemoryStat(bool all = false);
 std::string addThousandSeparators(u_int64_t num);
 void printMemoryStat(bool all = false);
+#endif
 
 void * operator new(size_t sizeOfObject, const char *memory_type1, int memory_type2 = 0);
 void * operator new[](size_t sizeOfObject, const char *memory_type1, int memory_type2 = 0);

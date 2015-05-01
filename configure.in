@@ -12,6 +12,7 @@ AC_ARG_WITH([tar], [AS_HELP_STRING([--without-tar], [disable support for tar])],
 AC_ARG_WITH([fraud], [AS_HELP_STRING([--without-fraud], [disable support for fraud detection])], [], [with_fraud=yes])
 AC_ARG_WITH([spool], [AS_HELP_STRING([--without-spool], [disable support spool directory])], [], [with_spool=yes])
 AC_ARG_WITH([manager], [AS_HELP_STRING([--without-manager], [disable manager support])], [], [with_manager=yes])
+AC_ARG_WITH([heapsafe], [AS_HELP_STRING([--without-heapsafe], [disable safe heap checking])], [], [with_heapsafe=yes])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -340,6 +341,13 @@ else
 	ENABLE_MANAGER_T=no
 fi
 
+if test "x$with_heapsafe" != xno ; then
+	AC_DEFINE([ENABLE_HEAPSAFE], [1], [Define if you need safe heap checking support])
+	ENABLE_HEAPSAFE_T=yes
+else
+	ENABLE_HEAPSAFE_T=no
+fi
+
 AC_CONFIG_FILES([Makefile
                  simpleini/Makefile])
 
@@ -374,6 +382,7 @@ tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
 manager enabled                        : $ENABLE_MANAGER_T
+heap checking enabled                  : $ENABLE_HEAPSAFE_T
 
 shared binary: run make 
 static binary: run make static

@@ -3,6 +3,9 @@
 /* Define if need fraud detection */
 #undef ENABLE_FRAUD
 
+/* Define if you need safe heap checking support */
+#undef ENABLE_HEAPSAFE
+
 /* Define if you need manager support */
 #undef ENABLE_MANAGER
 

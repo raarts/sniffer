@@ -10,6 +10,7 @@
 
 extern sVerbose sverb;
 
+#ifdef ENABLE_HEAPSAFE
 unsigned int HeapSafeCheck = 0;
 volatile u_int64_t memoryStat[10000];
 volatile u_int64_t memoryStatOther[10000];
@@ -23,7 +24,7 @@ volatile int memoryStat_sync;
 volatile u_int16_t threadRecursion[65536];
 void* threadStack[65536][10];
 u_int16_t threadStackSize[65536];
-
+#endif
 
 inline void *_heapsafe_alloc(size_t sizeOfObject) {
 	return(malloc(sizeOfObject));
@@ -33,6 +34,7 @@ inline void _heapsafe_free(void *pointerToObject) {
 	free(pointerToObject);
 }
  
+#ifdef ENABLE_HEAPSAFE
 inline void * heapsafe_safe_alloc(size_t sizeOfObject) { 
 	void *pointerToObject = _heapsafe_alloc(sizeOfObject + HEAPSAFE_SAFE_ALLOC_RESERVE * 2);
 	if(!pointerToObject) {
@@ -282,13 +284,16 @@ inline void heapsafe_free(void *pointerToObject) {
 		HeapSafeAllocError(error);
 	}
 }
-
+#endif
 
 void * operator new(size_t sizeOfObject) { 
-	void *newPointer = HeapSafeCheck ?
+	void *newPointer =
+#ifdef ENABLE_HEAPSAFE
+                            HeapSafeCheck ?
 			    (HeapSafeCheck & _HeapSafeSafeReserve ?
 			      heapsafe_safe_alloc(sizeOfObject) :
 			      heapsafe_alloc(sizeOfObject)) :
+#endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
 		syslog(LOG_ERR, "allocation (operator new) failed - size %lu", sizeOfObject);
@@ -297,10 +302,13 @@ void * operator new(size_t sizeOfObject) {
 }
  
 void * operator new[](size_t sizeOfObject) {
-	void *newPointer = HeapSafeCheck ? 
+	void *newPointer = 
+#ifdef ENABLE_HEAPSAFE
+                            HeapSafeCheck ? 
 			    (HeapSafeCheck & _HeapSafeSafeReserve ?
 			      heapsafe_safe_alloc(sizeOfObject) :
 			      heapsafe_alloc(sizeOfObject)) :
+#endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
 		syslog(LOG_ERR, "allocation (operator new[]) failed - size %lu", sizeOfObject);
@@ -309,10 +317,13 @@ void * operator new[](size_t sizeOfObject) {
 }
 
 void * operator new(size_t sizeOfObject, const char *memory_type1, int memory_type2) { 
-	void *newPointer = HeapSafeCheck ?
+	void *newPointer = 
+#ifdef ENABLE_HEAPSAFE
+                            HeapSafeCheck ?
 			    (HeapSafeCheck & _HeapSafeSafeReserve ?
 			      heapsafe_safe_alloc(sizeOfObject) :
 			      heapsafe_alloc(sizeOfObject, memory_type1, memory_type2)) :
+#endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
 		syslog(LOG_ERR, "allocation (operator new) failed - size %lu, %s, %i", sizeOfObject, memory_type1 ? memory_type1 : "", memory_type2);
@@ -321,10 +332,13 @@ void * operator new(size_t sizeOfObject, const char *memory_type1, int memory_ty
 }
  
 void * operator new[](size_t sizeOfObject, const char *memory_type1, int memory_type2) {
-	void *newPointer = HeapSafeCheck ? 
+	void *newPointer = 
+#ifdef ENABLE_HEAPSAFE
+                           HeapSafeCheck ? 
 			    (HeapSafeCheck & _HeapSafeSafeReserve ?
 			      heapsafe_safe_alloc(sizeOfObject) :
 			      heapsafe_alloc(sizeOfObject, memory_type1, memory_type2)) :
+#endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
 		syslog(LOG_ERR, "allocation (operator new[]) failed - size %lu, %s, %i", sizeOfObject, memory_type1 ? memory_type1 : "", memory_type2);
@@ -333,26 +347,30 @@ void * operator new[](size_t sizeOfObject, const char *memory_type1, int memory_
 }
  
 void operator delete(void *pointerToObject) {
+#ifdef ENABLE_HEAPSAFE
 	if(HeapSafeCheck)
 	 if(HeapSafeCheck & _HeapSafeSafeReserve)
 	  heapsafe_safe_free(pointerToObject);
 	 else
 	  heapsafe_free(pointerToObject);
 	else 
+#endif
 	 _heapsafe_free(pointerToObject);
 }
  
 void operator delete[](void *pointerToObject) {
+#ifdef ENABLE_HEAPSAFE
 	if(HeapSafeCheck)
 	 if(HeapSafeCheck & _HeapSafeSafeReserve)
 	  heapsafe_safe_free(pointerToObject);
 	 else
 	  heapsafe_free(pointerToObject);
 	else 
+#endif
 	 _heapsafe_free(pointerToObject);
 }
 
-
+#ifdef ENABLE_HEAPSAFE
 void HeapSafeAllocError(int error) {
 	if(error) {
 		const char *errorString =
@@ -452,3 +470,5 @@ void printMemoryStat(bool all) {
 	malloc_trim(0);
 	std::cout << getMemoryStat(all);
 }
+#endif
+
