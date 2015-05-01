@@ -409,6 +409,7 @@ config_load_mysql() {
 			opt_domainport = atoi(row["domainport"].c_str());
 		}
 
+#ifdef ENABLE_MANAGER
 		if(row["managerport"] != "") {
 			opt_manager_port = atoi(row["managerport"].c_str());
 		}
@@ -424,7 +425,7 @@ config_load_mysql() {
 		if(row["managerclientport"] != "") {
 			opt_clientmanagerport = atoi(row["managerclientport"].c_str());
 		}
-
+#endif
 		if(row["savertcp"] != "") {
 			opt_saveRTCP = atoi(row["savertcp"].c_str());
 		}

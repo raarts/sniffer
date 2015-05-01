@@ -59,7 +59,9 @@
 #include "calltable.h"
 #include "sniff.h"
 #include "simpleini/SimpleIni.h"
+#ifdef ENABLE_MANAGER
 #include "manager.h"
+#endif
 #include "filter_mysql.h"
 #include "sql_db.h"
 #include "tools.h"
@@ -217,9 +219,11 @@ int opt_jitterbuffer_adapt = 1;		// turns off/on jitterbuffer simulator to compu
 int opt_ringbuffer = 10;	// ring buffer in MB 
 int opt_sip_register = 0;	// if == 1 save REGISTER messages
 int opt_audio_format = FORMAT_WAV;	// define format for audio writing (if -W option)
+#ifdef ENABLE_MANAGER
 int opt_manager_port = 5029;	// manager api TCP port
 char opt_manager_ip[32] = "127.0.0.1";	// manager api listen IP address
 int opt_manager_nonblock_mode = 0;
+#endif
 int opt_pcap_threaded = 0;	// run reading packets from pcap in one thread and process packets in another thread via queue
 int opt_rtpsave_threaded = 1;
 int opt_norecord_header = 0;	// if = 1 SIP call with X-VoipMonitor-norecord header will be not saved although global configuration says to record. 
@@ -263,8 +267,10 @@ int opt_cdronlyanswered = 0;
 int opt_cdronlyrtp = 0;
 int opt_pcap_split = 1;
 int opt_newdir = 1;
+#ifdef ENABLE_MANAGER
 char opt_clientmanager[1024] = "";
 int opt_clientmanagerport = 9999;
+#endif
 int opt_callslimit = 0;
 char opt_silencedmtfseq[16] = "";
 char opt_keycheck[1024] = "";
@@ -547,7 +553,9 @@ pthread_t storing_cdr_thread;		// ID of worker storing CDR thread
 pthread_t scanpcapdir_thread;
 //pthread_t destroy_calls_thread;
 pthread_t readdump_libpcap_thread;
+#ifdef ENABLE_MANAGER
 pthread_t manager_thread = 0;	// ID of worker manager thread 
+#endif
 pthread_t manager_client_thread;	// ID of worker manager thread 
 pthread_t manager_ssh_thread;	
 pthread_t cachedir_thread;	// ID of worker cachedir thread 
@@ -1840,6 +1848,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "domainport", NULL))) {
 		opt_domainport = atoi(value);
 	}
+#ifdef ENABLE_MANAGER
 	if((value = ini.GetValue("general", "managerport", NULL))) {
 		opt_manager_port = atoi(value);
 	}
@@ -1855,6 +1864,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "managerclientport", NULL))) {
 		opt_clientmanagerport = atoi(value);
 	}
+#endif
 	if((value = ini.GetValue("general", "savertcp", NULL))) {
 		opt_saveRTCP = yesno(value);
 	}
@@ -3446,12 +3456,14 @@ int main(int argc, char *argv[]) {
 				load_config(configfile);
 				load_config((char*)"/etc/voipmonitor/conf.d/");
 				break;
+#ifdef ENABLE_MANAGER
 			case '8':
 				opt_manager_port = atoi(optarg);
 				if(char *pointToSeparator = strchr(optarg,'/')) {
 					strncpy(opt_manager_ip, pointToSeparator+1, sizeof(opt_manager_ip));
 				}
 				break;
+#endif
 			case '9':
 				opt_saveRTCP = 1;
 				break;
@@ -4312,7 +4324,9 @@ int main(int argc, char *argv[]) {
 			opt_maxpoolaudiosize = 0;
 			opt_maxpoolaudiodays = 0;
 			
+#ifdef ENABLE_MANAGER
 			opt_manager_port = 0; // disable cleaning spooldir when reading from file 
+#endif
 			printf("Reading file: %s\n", fname);
 			mask = PCAP_NETMASK_UNKNOWN;
 			global_pcap_handle = pcap_open_offline_zip(fname, errbuf);
@@ -4460,6 +4474,7 @@ int main(int argc, char *argv[]) {
 		pthread_create(&cachedir_thread, NULL, moving_cache, NULL);
 	}
 
+#ifdef ENABLE_MANAGER
 	// start manager thread 	
 	if(opt_manager_port > 0) {
 		pthread_create(&manager_thread, NULL, manager_server, NULL);
@@ -4468,6 +4483,7 @@ int main(int argc, char *argv[]) {
 			pthread_create(&manager_client_thread, NULL, manager_client, NULL);
 		}
 	};
+#endif
 
 #ifdef ENABLE_TAR
 	// start tar dumper
@@ -4478,7 +4494,9 @@ int main(int argc, char *argv[]) {
 
 #ifdef HAVE_LIBSSH
 	if(ssh_host[0] != '\0') {
+#ifdef ENABLE_MANAGER
 		pthread_create(&manager_ssh_thread, NULL, manager_ssh, NULL);
+#endif
 	}
 #endif
 
@@ -4808,6 +4826,7 @@ int main(int argc, char *argv[]) {
 
 	readend = 1;
 
+#ifdef ENABLE_MANAGER
 	//wait for manager to properly terminate 
 	if(opt_manager_port && manager_thread > 0) {
 		int res;
@@ -4826,6 +4845,7 @@ int main(int argc, char *argv[]) {
 		pthread_timedjoin_np(manager_thread, NULL, &ts);
 #endif
 	}
+#endif
 
 #ifdef QUEUE_NONBLOCK2
 	if(opt_pcap_threaded && !opt_pcap_queue) {

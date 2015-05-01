@@ -1,4 +1,5 @@
 #include "config.h"
+#ifdef ENABLE_MANAGER
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -2654,3 +2655,4 @@ int sendFile(const char *fileName, int client, ssh_channel sshchannel, bool zip)
 	
 	return(0);
 }
+#endif // ENABLE_MANAGER

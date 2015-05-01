@@ -539,8 +539,9 @@ Tar::tar_read_block_ev(char *data) {
 		this->readData.fileSize = 0;
 	}
 }
-
+#ifdef ENABLE_MANAGER
 extern int _sendvm(int socket, void *channel, const char *buf, size_t len, int mode);
+#endif
 void 
 Tar::tar_read_file_ev(tar_header fileHeader, char *data, u_int32_t pos, u_int32_t len) {
 	if(!reg_match(fileHeader.name, this->readData.filename.c_str(), __FILE__, __LINE__)) {
@@ -554,9 +555,11 @@ Tar::tar_read_file_ev(tar_header fileHeader, char *data, u_int32_t pos, u_int32_
 					this->readData.error = true;
 				}
 			} else {
+#ifdef ENABLE_MANAGER
 				if(_sendvm(this->readData.send_parameters_client, this->readData.send_parameters_sshchannel, data, len, 0) == -1) {
 					this->readData.error = true;
 				}
+#endif
 			}
 		} else if(this->readData.output_file_handle) {
 			fwrite(data, len, 1, this->readData.output_file_handle);
@@ -754,9 +757,11 @@ Tar::flush() {
 
 int
 Tar::tar_block_write(const char *buf, u_int32_t len){
+#ifdef ENABLE_MANAGER
 	while(opt_blocktarwrite) {
 		sleep(1);
 	}
+#endif
 	int zip = false;
 	int lzma = false;
 	switch(tar.qtype) {

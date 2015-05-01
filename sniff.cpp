@@ -70,7 +70,9 @@ and insert them into Call class.
 #include "tcpreassembly.h"
 #include "ip_frag.h"
 #include "regcache.h"
+#ifdef ENABLE_MANAGER
 #include "manager.h"
+#endif
 #ifdef ENABLE_FRAUD
 #include "fraud.h"
 #endif
@@ -206,7 +208,9 @@ extern char ifname[1024];
 extern uint8_t opt_sdp_reverse_ipport;
 extern int opt_fork;
 extern regcache *regfailedcache;
+#ifdef ENABLE_MANAGER
 extern ManagerClientThreads ClientThreads;
+#endif
 extern int opt_register_timeout;
 extern int opt_nocdr;
 #ifdef ENABLE_FRAUD
@@ -2276,16 +2280,20 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 			counter_sip_message_packets++;
 			break;
 		case OPTIONS:
+#ifdef ENABLE_MANAGER
 			if(livesnifferfilterUseSipTypes.u_options) {
 				save_live_packet(NULL, header, packet, saddr, source, daddr, dest, istcp, data, datalen, OPTIONS, 
 						 dlt, sensor_id);
 			}
+#endif
 			break;
 		case SUBSCRIBE:
+#ifdef ENABLE_MANAGER
 			if(livesnifferfilterUseSipTypes.u_subscribe) {
 				save_live_packet(NULL, header, packet, saddr, source, daddr, dest, istcp, data, datalen, SUBSCRIBE, 
 						 dlt, sensor_id);
 			}
+#endif
 			break;
 		}
 		
@@ -2381,6 +2389,7 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 				// if yes check for cseq OPTIONS or SUBSCRIBE 
 				s = gettag(data, datalen, "\nCSeq:", &l, &gettagLimitLen);
 				if(l && l < 32) {
+#ifdef ENABLE_MANAGER
 					if(livesnifferfilterUseSipTypes.u_subscribe && memmem(s, l, "SUBSCRIBE", 9)) {
 						save_live_packet(NULL, header, packet, saddr, source, daddr, dest, istcp, data, datalen, SUBSCRIBE, 
 								 dlt, sensor_id);
@@ -2388,6 +2397,7 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 						save_live_packet(NULL, header, packet, saddr, source, daddr, dest, istcp, data, datalen, OPTIONS, 
 								 dlt, sensor_id);
 					}
+#endif // ENABLE_MANAGER
 				}
 				if(logPacketSipMethodCall_enable) {
 					logPacketSipMethodCall(packet_number, sip_method, lastSIPresponseNum, header, 
@@ -2781,8 +2791,10 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 					}
 				}
 				if(!call->onCall_2XX) {
+#ifdef ENABLE_MANAGER
 					ClientThreads.onCall(lastSIPresponseNum, call->callername, call->caller, call->called,
 							     call->sipcallerip[0], call->sipcalledip[0]);
+#endif
 					call->onCall_2XX = true;
 				}
 
@@ -2792,8 +2804,10 @@ Call *process_packet(bool is_ssl, u_int64_t packet_number,
 					call->progress_time = header->ts.tv_sec;
 				}
 				if(!call->onCall_18X) {
+#ifdef ENABLE_MANAGER
 					ClientThreads.onCall(lastSIPresponseNum, call->callername, call->caller, call->called,
 							     call->sipcallerip[0], call->sipcalledip[0]);
+#endif
 					call->onCall_18X = true;
 				}
 			}

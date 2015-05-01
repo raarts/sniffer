@@ -4513,11 +4513,13 @@ void PcapQueue_readFromFifo::processPacket(pcap_pkthdr_plus *header_plus, u_char
 	bool useTcpReassemblySsl = false;
 	static u_int64_t packet_counter_all;
 	
+#ifdef ENABLE_MANAGER
 	extern int opt_blockprocesspacket;
 	if(opt_blockprocesspacket) {
 		return;
 	}
-	
+#endif
+
 	++packet_counter_all;
 	
 	pcap_pkthdr *header = header_plus->convertToStdHeader();

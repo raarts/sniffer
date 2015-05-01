@@ -11,6 +11,7 @@ AC_ARG_WITH([skinny], [AS_HELP_STRING([--without-skinny], [disable support for s
 AC_ARG_WITH([tar], [AS_HELP_STRING([--without-tar], [disable support for tar])], [], [with_tar=yes])
 AC_ARG_WITH([fraud], [AS_HELP_STRING([--without-fraud], [disable support for fraud detection])], [], [with_fraud=yes])
 AC_ARG_WITH([spool], [AS_HELP_STRING([--without-spool], [disable support spool directory])], [], [with_spool=yes])
+AC_ARG_WITH([manager], [AS_HELP_STRING([--without-manager], [disable manager support])], [], [with_manager=yes])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -324,6 +325,13 @@ else
 	ENABLE_SPOOL_T=no
 fi
 
+if test "x$with_manager" != xno ; then
+	AC_DEFINE([ENABLE_MANAGER], [1], [Define if you need manager support])
+	ENABLE_MANAGER_T=yes
+else
+	ENABLE_MANAGER_T=no
+fi
+
 AC_CONFIG_FILES([Makefile
                  simpleini/Makefile])
 
@@ -356,6 +364,7 @@ Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
+manager enabled                        : $ENABLE_MANAGER_T
 
 shared binary: run make 
 static binary: run make static

@@ -664,6 +664,7 @@ with_skinny
 with_tar
 with_fraud
 with_spool
+with_manager
 with_odbc
 with_oggvorbis
 with_snappy
@@ -1295,6 +1296,7 @@ Optional Packages:
   --without-tar           disable support for tar
   --without-fraud         disable support for fraud detection
   --without-spool         disable support spool directory
+  --without-manager       disable manager support
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
@@ -1908,6 +1910,14 @@ if test "${with_spool+set}" = set; then :
   withval=$with_spool;
 else
   with_spool=yes
+fi
+
+
+# Check whether --with-manager was given.
+if test "${with_manager+set}" = set; then :
+  withval=$with_manager;
+else
+  with_manager=yes
 fi
 
 
@@ -4410,6 +4420,15 @@ else
 	ENABLE_SPOOL_T=no
 fi
 
+if test "x$with_manager" != xno ; then
+
+$as_echo "#define ENABLE_MANAGER 1" >>confdefs.h
+
+	ENABLE_MANAGER_T=yes
+else
+	ENABLE_MANAGER_T=no
+fi
+
 ac_config_files="$ac_config_files Makefile simpleini/Makefile"
 
 
@@ -5720,6 +5739,7 @@ Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
+manager enabled                        : $ENABLE_MANAGER_T
 
 shared binary: run make
 static binary: run make static
@@ -5754,6 +5774,7 @@ Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
+manager enabled                        : $ENABLE_MANAGER_T
 
 shared binary: run make
 static binary: run make static
