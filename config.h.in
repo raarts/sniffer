@@ -6,6 +6,9 @@
 /* Define if need Skinny protocol */
 #undef ENABLE_SKINNY
 
+/* Define if need spool directory support */
+#undef ENABLE_SPOOL
+
 /* Define if need tar writing */
 #undef ENABLE_TAR
 

@@ -663,6 +663,7 @@ with_siptls
 with_skinny
 with_tar
 with_fraud
+with_spool
 with_odbc
 with_oggvorbis
 with_snappy
@@ -1293,6 +1294,7 @@ Optional Packages:
   --without-skinny        disable support for skinny
   --without-tar           disable support for tar
   --without-fraud         disable support for fraud detection
+  --without-spool         disable support spool directory
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
@@ -1898,6 +1900,14 @@ if test "${with_fraud+set}" = set; then :
   withval=$with_fraud;
 else
   with_fraud=yes
+fi
+
+
+# Check whether --with-spool was given.
+if test "${with_spool+set}" = set; then :
+  withval=$with_spool;
+else
+  with_spool=yes
 fi
 
 
@@ -4391,6 +4401,15 @@ else
 	ENABLE_FRAUD_T=no
 fi
 
+if test "x$with_spool" != xno ; then
+
+$as_echo "#define ENABLE_SPOOL 1" >>confdefs.h
+
+	ENABLE_SPOOL_T=yes
+else
+	ENABLE_SPOOL_T=no
+fi
+
 ac_config_files="$ac_config_files Makefile simpleini/Makefile"
 
 
@@ -5700,6 +5719,7 @@ SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
+spool directory support enabled        : $ENABLE_SPOOL_T
 
 shared binary: run make
 static binary: run make static
@@ -5733,6 +5753,7 @@ SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
+spool directory support enabled        : $ENABLE_SPOOL_T
 
 shared binary: run make
 static binary: run make static

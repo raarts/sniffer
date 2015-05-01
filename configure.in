@@ -10,6 +10,7 @@ AC_ARG_WITH([siptls], [AS_HELP_STRING([--without-siptls], [disable support for s
 AC_ARG_WITH([skinny], [AS_HELP_STRING([--without-skinny], [disable support for skinny])], [], [with_skinny=yes])
 AC_ARG_WITH([tar], [AS_HELP_STRING([--without-tar], [disable support for tar])], [], [with_tar=yes])
 AC_ARG_WITH([fraud], [AS_HELP_STRING([--without-fraud], [disable support for fraud detection])], [], [with_fraud=yes])
+AC_ARG_WITH([spool], [AS_HELP_STRING([--without-spool], [disable support spool directory])], [], [with_spool=yes])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -316,6 +317,13 @@ else
 	ENABLE_FRAUD_T=no
 fi
 
+if test "x$with_spool" != xno ; then
+	AC_DEFINE([ENABLE_SPOOL], [1], [Define if need spool directory support])
+	ENABLE_SPOOL_T=yes
+else
+	ENABLE_SPOOL_T=no
+fi
+
 AC_CONFIG_FILES([Makefile
                  simpleini/Makefile])
 
@@ -347,6 +355,7 @@ SIP TLS decoding enabled               : $HAVE_SIPTLS_T
 Skinny decoding enabled                : $ENABLE_SKINNY_T
 tar writing enabled                    : $ENABLE_TAR_T
 fraud detection enabled                : $ENABLE_FRAUD_T
+spool directory support enabled        : $ENABLE_SPOOL_T
 
 shared binary: run make 
 static binary: run make static

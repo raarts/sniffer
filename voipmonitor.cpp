@@ -72,7 +72,9 @@
 #include "webrtc.h"
 #include "ssldata.h"
 #include "ip_frag.h"
+#ifdef ENABLE_SPOOL
 #include "cleanspool.h"
+#endif
 #include "regcache.h"
 #include "config_mysql.h"
 #ifdef ENABLE_FRAUD
@@ -226,7 +228,9 @@ int opt_norecord_dtmf = 0;	// if = 1 SIP call with dtmf == *0 sequence (in SIP I
 int opt_savewav_force = 0;	// if = 1 WAV will be generated no matter on filter rules
 int opt_sipoverlap = 1;		
 int opt_id_sensor = -1;		
+#ifdef ENABLE_SPOOL
 int opt_id_sensor_cleanspool = -1;		
+#endif
 int readend = 0;
 int opt_dup_check = 0;
 int opt_dup_check_ipheader = 1;
@@ -235,8 +239,10 @@ int sipwithoutrtptimeout = 3600;
 int absolute_timeout = 4 * 3600;
 int opt_destination_number_mode = 1;
 int opt_update_dstnum_onanswer = 0;
+#ifdef ENABLE_SPOOL
 int opt_cleanspool_interval = 0; // number of seconds between cleaning spool directory. 0 = disabled
 int opt_cleanspool_sizeMB = 0; // number of MB to keep in spooldir
+#endif
 int opt_domainport = 0;
 int request_iptelnum_reload = 0;
 int opt_mirrorip = 0;
@@ -330,6 +336,7 @@ unsigned int opt_maxpoolgraphdays = 0;
 unsigned int opt_maxpoolaudiosize = 0;
 unsigned int opt_maxpoolaudiodays = 0;
 int opt_maxpool_clean_obsolete = 0;
+#ifdef ENABLE_SPOOL
 int opt_autocleanspool = 1;
 int opt_autocleanspoolminpercent = 1;
 bool opt_autocleanspoolminpercent_configset = false;
@@ -337,6 +344,7 @@ int opt_autocleanmingb = 5;
 bool opt_autocleanmingb_configset = false;
 int opt_cleanspool_enable_run_hour_from = -1;
 int opt_cleanspool_enable_run_hour_to = -1;
+#endif
 int opt_mysqlloadconfig = 1;
 int opt_last_rtp_from_end = 1;
 int opt_pcap_dump_bufflength = 8192;
@@ -1009,7 +1017,9 @@ void *storing_cdr( void *dummy ) {
 	time_t dropPartitionAt = 0;
 	time_t createPartitionIpaccAt = 0;
 	time_t createPartitionBillingAgregationAt = 0;
+#ifdef ENABLE_SPOOL
 	time_t checkDiskFreeAt = 0;
+#endif
 	while(1) {
 		if(!opt_nocdr and opt_cdr_partition and !opt_disable_partition_operations and isSqlDriver("mysql")) {
 			time_t actTime = time(NULL);
@@ -1039,6 +1049,7 @@ void *storing_cdr( void *dummy ) {
 			}
 		}
 		
+#ifdef ENABLE_SPOOL
 		if(opt_autocleanspool &&
 		   isSqlDriver("mysql") &&
 		   !(opt_pcap_queue && 
@@ -1052,6 +1063,7 @@ void *storing_cdr( void *dummy ) {
 				checkDiskFreeAt = actTime;
 			}
 		}
+#endif
 		
 		if(request_iptelnum_reload == 1) { reload_capture_rules(); request_iptelnum_reload = 0;};
 		
@@ -1541,12 +1553,14 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "cleandatabase_register_failed", NULL))) {
 		opt_cleandatabase_register_failed = atoi(value);
 	}
+#ifdef ENABLE_SPOOL
 	if((value = ini.GetValue("general", "cleanspool_interval", NULL))) {
 		opt_cleanspool_interval = atoi(value);
 	}
 	if((value = ini.GetValue("general", "cleanspool_size", NULL))) {
 		opt_cleanspool_sizeMB = atoi(value);
 	}
+#endif
 	if((value = ini.GetValue("general", "maxpoolsize", NULL))) {
 		opt_maxpoolsize = atoi(value);
 	}
@@ -1580,6 +1594,7 @@ int eval_config(string inistr) {
 	if((value = ini.GetValue("general", "maxpool_clean_obsolete", NULL))) {
 		opt_maxpool_clean_obsolete = yesno(value);
 	}
+#ifdef ENABLE_SPOOL
 	if((value = ini.GetValue("general", "autocleanspool", NULL))) {
 		opt_autocleanspool = yesno(value);
 	}
@@ -1611,9 +1626,12 @@ int eval_config(string inistr) {
 			}
 		}
 	}
+#endif
 	if((value = ini.GetValue("general", "id_sensor", NULL))) {
 		opt_id_sensor = atoi(value);
+#ifdef ENABLE_SPOOL
 		opt_id_sensor_cleanspool = opt_id_sensor;
+#endif
 	}
 	if((value = ini.GetValue("general", "pcapcommand", NULL))) {
 		strncpy(pcapcommand, value, sizeof(pcapcommand));
@@ -2782,9 +2800,11 @@ void set_context_config() {
 			}
 		}
 		
+#ifdef ENABLE_SPOOL
 		if(opt_pcap_queue_receive_from_ip_port) {
 			opt_id_sensor_cleanspool = -1;
 		}
+#endif
 		
 		if(!strcmp(ifname, "lo")) {
 			opt_pcap_queue_dequeu_method = 0;
@@ -4413,14 +4433,17 @@ int main(int argc, char *argv[]) {
 		asyncClose->startThreads(opt_pcap_dump_writethreads, opt_pcap_dump_writethreads_max);
 	}
 	
+#ifdef ENABLE_SPOOL
 	if(!opt_nocdr &&
 	   isSqlDriver("mysql") &&
 	   !(opt_pcap_queue && 
 	     !opt_pcap_queue_receive_from_ip_port &&
-	     opt_pcap_queue_send_to_ip_port) &&
-	   isSetCleanspoolParameters()) {
+	     opt_pcap_queue_send_to_ip_port) && 
+	  isSetCleanspoolParameters()
+	   ) {
 		runCleanSpoolThread();
 	}
+#endif
 	
 	// start thread processing queued cdr and sql queue - supressed if run as sender
 	if(!(opt_pcap_threaded && opt_pcap_queue && 
@@ -4606,12 +4629,14 @@ int main(int argc, char *argv[]) {
 	
 #ifdef ENABLE_TAR
 	if(opt_pcap_dump_tar && opt_fork) {
+#ifdef ENABLE_SPOOL
 		string maxSpoolDate = getMaxSpoolDate();
 		if(maxSpoolDate.length()) {
 			syslog(LOG_NOTICE, "run reindex date %s", maxSpoolDate.c_str());
 			reindex_date(maxSpoolDate);
 			syslog(LOG_NOTICE, "reindex date %s completed", maxSpoolDate.c_str());
 		}
+#endif
 	}
 #endif
 
@@ -4996,11 +5021,12 @@ int main(int argc, char *argv[]) {
 	if(sqlDbEscape) {
 		delete sqlDbEscape;
 	}
+#ifdef ENABLE_SPOOL
 	extern SqlDb_mysql *sqlDbCleanspool;
 	if(sqlDbCleanspool) {
 		delete sqlDbCleanspool;
 	}
-	
+#endif
 	sqlStore->setEnableTerminatingIfEmpty(0, true);
 	sqlStore->setEnableTerminatingIfSqlError(0, true);
 	
@@ -5433,11 +5459,13 @@ void test() {
 		delete sqlDb;
 		}
 		return;
+#ifdef ENABLE_SPOOL
 	case 95:
 		chdir(opt_chdir);
 		check_filesindex();
 		terminating = 1;
 		break;
+#endif
 	case 96:
 		{
 		union {
@@ -5491,10 +5519,12 @@ void test() {
 		cout << restart.getRsltString();
 		}
 		return;
+#ifdef ENABLE_SPOOL
 	case 99:
 		char *pointToSepOptTest = strchr(opt_test_str, '/');
 		check_spooldir_filesindex(NULL, pointToSepOptTest ? pointToSepOptTest + 1 : NULL);
 		return;
+#endif
 	}
  
 	/*

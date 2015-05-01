@@ -43,7 +43,9 @@
 #include "sql_db.h"
 #include "rtcp.h"
 #include "ipaccount.h"
+#ifdef ENABLE_SPOOL
 #include "cleanspool.h"
+#endif
 #include "regcache.h"
 #include "fraud.h"
 #ifdef ENABLE_TAR
@@ -395,8 +397,11 @@ Call::addtofilesqueue(string file, string column, long long writeBytes) {
 void 
 Call::_addtofilesqueue(string file, string column, string dirnamesqlfiles, long long writeBytes) {
 
-	if(!opt_filesclean or opt_nocdr or file == "" or !isSqlDriver("mysql") or
-	   !isSetCleanspoolParameters()) return;
+	if(!opt_filesclean or opt_nocdr or file == "" or !isSqlDriver("mysql") 
+#ifdef ENABLE_SPOOL
+	   or !isSetCleanspoolParameters()
+#endif
+	   ) return;
 
 	bool fileExists = file_exists((char*)file.c_str());
 	bool fileCacheExists = false;
@@ -437,8 +442,11 @@ Call::_addtofilesqueue(string file, string column, string dirnamesqlfiles, long 
 
 	ostringstream query;
 
-	int id_sensor = opt_id_sensor_cleanspool == -1 ? 0 : opt_id_sensor_cleanspool;
-	
+	int id_sensor = 0;
+#ifdef ENABLE_SPOOL
+	if (opt_id_sensor_cleanspool != -1) id_sensor = opt_id_sensor_cleanspool;
+#endif
+
 	query << "INSERT INTO files SET files.datehour = " << dirnamesqlfiles << ", id_sensor = " << id_sensor << ", "
 		<< column << " = " << size << " ON DUPLICATE KEY UPDATE " << column << " = " << column << " + " << size;
 

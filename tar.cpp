@@ -47,8 +47,9 @@
 #include "tar.h"
 #include "tools.h"
 #include "config.h"
+#ifdef ENABLE_SPOOL
 #include "cleanspool.h"
-
+#endif
 
 using namespace std;
 
@@ -849,7 +850,11 @@ void Tar::addtofilesqueue() {
 		column = "rtpsize";
 	}
 
-	if(!opt_filesclean or opt_nocdr or !isSqlDriver("mysql") or !isSetCleanspoolParameters()) return;
+	if(!opt_filesclean or opt_nocdr or !isSqlDriver("mysql") 
+#ifdef ENABLE_SPOOL
+	   or !isSetCleanspoolParameters()
+#endif
+	   ) return;
 
 	long long size = 0;
 	size = GetFileSizeDU(pathname.c_str());
@@ -870,8 +875,11 @@ void Tar::addtofilesqueue() {
 
 	ostringstream query;
 
+	int id_sensor = 0;
+#ifdef ENABLE_SPOOL
 	extern int opt_id_sensor_cleanspool;
-	int id_sensor = opt_id_sensor_cleanspool == -1 ? 0 : opt_id_sensor_cleanspool;
+	if (opt_id_sensor_cleanspool != -1) id_sensor = opt_id_sensor_cleanspool;
+#endif
 
 
 /* returns name of the directory in format YYYY-MM-DD */

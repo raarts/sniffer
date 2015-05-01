@@ -37,7 +37,9 @@
 #include "tools.h"
 #include "calltable.h"
 #include "format_ogg.h"
+#ifdef ENABLE_SPOOL
 #include "cleanspool.h"
+#endif
 #include "pcap_queue.h"
 #include "manager.h"
 #ifdef ENABLE_FRAUD
@@ -608,6 +610,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			cerr << "Error sending data to client" << endl;
 			return -1;
 		}
+#ifdef ENABLE_SPOOL
 		if(strstr(buf, "reindexfiles_datehour")) {
 			reindex_date_hour(date, hour);
 		} else if(strstr(buf, "reindexfiles_date")) {
@@ -615,11 +618,13 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 		} else {
 			convert_filesindex();
 		}
+#endif
 		snprintf(sendbuf, BUFSIZE, "done\r\n");
 		if ((size = sendvm(client, sshchannel, sendbuf, strlen(sendbuf), 0)) == -1){
 			cerr << "Error sending data to client" << endl;
 			return -1;
 		}
+#ifdef ENABLE_SPOOL
 	} else if(strstr(buf, "check_filesindex") != NULL) {
 		snprintf(sendbuf, BUFSIZE, "starting checking indexing please wait...");
 		if ((size = sendvm(client, sshchannel, sendbuf, strlen(sendbuf), 0)) == -1){
@@ -632,6 +637,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			cerr << "Error sending data to client" << endl;
 			return -1;
 		}
+#endif
 	} else if(strstr(buf, "totalcalls") != NULL) {
 		snprintf(sendbuf, BUFSIZE, "%d", calls_counter);
 		if ((size = sendvm(client, sshchannel, sendbuf, strlen(sendbuf), 0)) == -1){

@@ -31,7 +31,9 @@
 #include "tcpreassembly.h"
 #include "sniff.h"
 #include "rrd.h"
+#ifdef ENABLE_SPOOL
 #include "cleanspool.h"
+#endif
 #include "ssldata.h"
 #ifdef ENABLE_TAR
 #include "tar.h"
@@ -1367,6 +1369,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 #endif
 
 		double useAsyncWriteBuffer = buffersControl.getPercUseAsync();
+#ifdef ENABLE_SPOOL
 		extern bool suspendCleanspool;
 		extern volatile int clean_spooldir_run_processing;
 		if(useAsyncWriteBuffer > 50) {
@@ -1380,6 +1383,7 @@ void PcapQueue::pcapStat(int statPeriod, bool statCalls) {
 				suspendCleanspool = false;
 			}
 		}
+#endif
 		outStr << setprecision(0) << useAsyncWriteBuffer << "] ";
 		if(this->instancePcapHandle) {
 			unsigned long bypassBufferSizeExeeded = this->instancePcapHandle->pcapStat_get_bypass_buffer_size_exeeded();

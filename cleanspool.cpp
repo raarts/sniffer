@@ -16,6 +16,7 @@
 
 #include "sql_db.h"
 #include "tools.h"
+#ifdef ENABLE_SPOOL
 #include "cleanspool.h"
 
 
@@ -1900,3 +1901,4 @@ string getMaxSpoolDate() {
 		return("");
 	}
 }
+#endif // ENABLE_SPOOL
