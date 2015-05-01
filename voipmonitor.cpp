@@ -874,11 +874,15 @@ void *database_backup(void *dummy) {
 		syslog(LOG_NOTICE, "-- START BACKUP PROCESS");
 		time_t actTime = time(NULL);
 		if(actTime - createPartitionAt > 12 * 3600) {
+#ifdef ENABLE_MYSQL
 			createMysqlPartitionsCdr();
+#endif
 			createPartitionAt = actTime;
 		}
 		if(actTime - dropPartitionAt > 12 * 3600) {
+#ifdef ENABLE_MYSQL
 			dropMysqlPartitionsCdr();
+#endif
 			dropPartitionAt = actTime;
 		}
 		if(opt_database_backup_use_federated) {
@@ -1032,11 +1036,15 @@ void *storing_cdr( void *dummy ) {
 		if(!opt_nocdr and opt_cdr_partition and !opt_disable_partition_operations and isSqlDriver("mysql")) {
 			time_t actTime = time(NULL);
 			if(actTime - createPartitionAt > 12 * 3600) {
+#ifdef ENABLE_MYSQL
 				createMysqlPartitionsCdr();
+#endif
 				createPartitionAt = actTime;
 			}
 			if(actTime - dropPartitionAt > 12 * 3600) {
+#ifdef ENABLE_MYSQL
 				dropMysqlPartitionsCdr();
+#endif
 				dropPartitionAt = actTime;
 			}
 		}
@@ -1044,7 +1052,9 @@ void *storing_cdr( void *dummy ) {
 		if(!opt_nocdr and opt_ipaccount and !opt_disable_partition_operations and isSqlDriver("mysql")) {
 			time_t actTime = time(NULL);
 			if(actTime - createPartitionIpaccAt > 12 * 3600) {
+#ifdef ENABLE_MYSQL
 				createMysqlPartitionsIpacc();
+#endif
 				createPartitionIpaccAt = actTime;
 			}
 		}
@@ -1052,7 +1062,9 @@ void *storing_cdr( void *dummy ) {
 		if(!opt_nocdr and !opt_disable_partition_operations and isSqlDriver("mysql")) {
 			time_t actTime = time(NULL);
 			if(actTime - createPartitionBillingAgregationAt > 12 * 3600) {
+#ifdef ENABLE_MYSQL
 				createMysqlPartitionsBillingAgregation();
+#endif
 				createPartitionBillingAgregationAt = actTime;
 			}
 		}

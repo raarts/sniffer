@@ -6,7 +6,12 @@
 #include <vector>
 #include <queue>
 #include <map>
+#ifdef ENABLE_MYSQL
 #include <mysql.h>
+#else
+#define MYSQL void
+#define MYSQL_RES void
+#endif
 #include <sql.h>
 #include <sqlext.h>
 #include <sqltypes.h>
@@ -431,9 +436,11 @@ void prepareQuery(string subtypeDb, string &query, bool base, int nextPassQuery)
 string prepareQueryForPrintf(const char *query);
 string prepareQueryForPrintf(string &query);
 
+#ifdef ENABLE_MYSQL
 void createMysqlPartitionsCdr();
 void createMysqlPartitionsIpacc();
 void createMysqlPartitionsBillingAgregation();
 void dropMysqlPartitionsCdr();
+#endif
 
 #endif

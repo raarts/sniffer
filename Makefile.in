@@ -56,8 +56,8 @@ GLIBLIB=@GLIBLIB@
 LIBGNUTLS=@LIBGNUTLS@
 LIBGNUTLSSTATIC=@LIBGNUTLSSTATIC@
 
-SHARED_LIBS = ${LIBLD} -lpthread -lpcap -lz ${LIBOGGVORBIS} ${LIBODBC} ${MYSQLLIB} -lrt ${LIBSNAPPY} -lcurl -lssl -lcrypto ${JSONLIB} ${LIBSSH} -lxml2 ${LIBRRD} ${LIBGNUTLS} @LIBTCMALLOC@ ${GLIBLIB} ${LIBLZMA}
-STATIC_LIBS = -static @LIBTCMALLOC@ ${LIBODBC} -lltdl ${LIBLD} -lrt -lz ${LIBSSH} -lcrypt -lm -lcurl -lssl -lcrypto -static-libstdc++ -static-libgcc -lpcap -lpthread ${MYSQLLIB} -lpthread -lz -lc ${LIBOGGVORBIS} -lrt ${LIBSNAPPY} ${JSONLIB} ${LIBRRD} -lxml2 ${GLIBLIB} -lz -ldbi -llzma ${LIBGNUTLSSTATIC} 
+SHARED_LIBS = ${LIBLD} -lpthread -lpcap -lz ${LIBOGGVORBIS} ${LIBODBC} ${MYSQLLIB} -lrt ${LIBSNAPPY} -lcurl -lssl -lcrypto ${JSONLIB} ${LIBSSH} ${LIBRRD} ${LIBGNUTLS} @LIBTCMALLOC@ ${GLIBLIB} ${LIBLZMA}
+STATIC_LIBS = -static @LIBTCMALLOC@ ${LIBODBC} -lltdl ${LIBLD} -lrt -lz ${LIBSSH} -lcrypt -lm -lcurl -lssl -lcrypto -static-libstdc++ -static-libgcc -lpcap -lpthread ${MYSQLLIB} -lpthread -lz -lc ${LIBOGGVORBIS} -lrt ${LIBSNAPPY} ${JSONLIB} ${LIBRRD} 
 INCLUDES =  -I/usr/local/include ${MYSQLINC} -I jitterbuffer/ ${JSONCFLAGS} ${GLIBCFLAGS}
 LIBS_PATH = -L/usr/local/lib/ 
 CXXFLAGS +=  -Wall -fPIC -g3 -O2 -march=$(GCCARCH) -mtune=${GCCARCH} ${INCLUDES}

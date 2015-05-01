@@ -207,13 +207,15 @@ fi
 # Check for MySQL libraries (or MariaDB)
 AC_MSG_CHECKING(for mysql_config executable)
 AC_ARG_WITH(mysql, [  --with-mysql=PATH path to mysql_config binary or mysql prefix dir], [
-	if test -x $withval -a -f $withval
+	if test "x$with_mysql" == xno ; then
+		MYSQL_CONFIG=""
+	elif test -x $withval -a -f $withval
 	then
 		MYSQL_CONFIG=$withval
 	elif test -x $withval/bin/mysql_config -a -f $withval/bin/mysql_config
-    then
+	then
 		MYSQL_CONFIG=$withval/bin/mysql_config
-    fi
+	fi
 ], [
 	if test -x /usr/local/mysql/bin/mysql_config -a -f /usr/local/mysql/bin/mysql_config
 	then
@@ -228,9 +230,14 @@ AC_ARG_WITH(mysql, [  --with-mysql=PATH path to mysql_config binary or mysql pre
 ])
 if test "x$MYSQL_CONFIG" = "x"
 then
-    AC_MSG_RESULT(not found)
-    exit 3
+    if test "x$with_mysql" == xno ; then
+        ENABLE_MYSQL_T=no
+    else
+        AC_MSG_RESULT(not found)
+       exit 3
+    fi
 else
+    AC_DEFINE([ENABLE_MYSQL], [1], [Define if you want MySQL])
     AC_SUBST([MYSQLCFLAGS],[`$MYSQL_CONFIG --cflags`])
     AC_SUBST([MYSQLCXXFLAGS],[`$MYSQL_CONFIG --cxxflags`])
     MYSQLLDFLAGS=`$MYSQL_CONFIG --libs`
@@ -238,6 +245,7 @@ else
     AC_SUBST([MYSQLLIB],[$MYSQLLDFLAGS])
     AC_SUBST([MYSQLINCLUDE],[`$MYSQL_CONFIG --include`])
     AC_MSG_RESULT($MYSQL_CONFIG)
+    ENABLE_MYSQL_T=yes
 fi
 AC_CHECK_LIB([mysqlclient], [main], , AC_MSG_ERROR([Unable to find libmysqlclient. apt-get install libmysqlclient-dev | yum install mysql-devel | pkg install mysql56-client]))
 
@@ -356,6 +364,7 @@ lzma compression enabled               : $HAVE_LIBLZMA_T
 ssh library enabled (cloud)            : $HAVE_LIBSSH_T
 tcmalloc (faster *alloc) lib found     : $TCMALLOC_T
 odbc enabled                           : $HAVE_LIBODBC_T
+MySQL enabled                          : $ENABLE_MYSQL_T
 oggvorbis enabled                      : $HAVE_LIBOGGVORBIS_T
 snappy enabled                         : $HAVE_LIBSNAPPY_T
 rrd enabled                            : $HAVE_LIBRRD_T

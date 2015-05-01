@@ -7,8 +7,13 @@
 #include <sstream>
 #include <stdarg.h>
 #include <netdb.h>
+#ifdef ENABLE_MYSQL
 #include <mysqld_error.h>
 #include <errmsg.h>
+#else
+#define ER_PARSE_ERROR 1064
+#define CR_SERVER_GONE_ERROR	2006
+#endif
 #include <dirent.h>
 #include <math.h>
 
@@ -509,6 +514,7 @@ bool SqlDb_mysql::connect(bool createDb, bool mainInit) {
 	if(isCloud()) {
 		return(true);
 	}
+#ifdef ENABLE_MYSQL
 	this->connecting = true;
 	pthread_mutex_lock(&mysqlconnect_lock);
 	this->hMysql = mysql_init(NULL);
@@ -645,15 +651,30 @@ bool SqlDb_mysql::connect(bool createDb, bool mainInit) {
 	}
 	pthread_mutex_unlock(&mysqlconnect_lock);
 	this->connecting = false;
+#endif
 	return(false);
 }
 
 int SqlDb_mysql::multi_on() {
-	return isCloud() ? true : mysql_set_server_option(this->hMysql, MYSQL_OPTION_MULTI_STATEMENTS_ON);
+	if (isCloud()) {
+		return true;
+	}
+#ifdef ENABLE_MYSQL
+	return mysql_set_server_option(this->hMysql, MYSQL_OPTION_MULTI_STATEMENTS_ON);
+#else
+	return true;
+#endif
 }
 
 int SqlDb_mysql::multi_off() {
-	return isCloud() ? true : mysql_set_server_option(this->hMysql, MYSQL_OPTION_MULTI_STATEMENTS_OFF);
+	if (isCloud()) {
+		return true;
+	}
+#ifdef ENABLE_MYSQL
+	return mysql_set_server_option(this->hMysql, MYSQL_OPTION_MULTI_STATEMENTS_OFF);
+#else
+	return true;
+#endif
 }
 
 int SqlDb_mysql::getDbMajorVersion() {
@@ -727,6 +748,7 @@ void SqlDb_mysql::disconnect() {
 	if(isCloud()) {
 		return;
 	}
+#ifdef ENABLE_MYSQL
 	if(this->hMysqlRes) {
 		while(mysql_fetch_row(this->hMysqlRes));
 		mysql_free_result(this->hMysqlRes);
@@ -744,6 +766,7 @@ void SqlDb_mysql::disconnect() {
 		this->hMysql = NULL;
 	}
 	*/
+#endif
 }
 
 bool SqlDb_mysql::connected() {
@@ -751,6 +774,7 @@ bool SqlDb_mysql::connected() {
 }
 
 bool SqlDb_mysql::query(string query, bool callFromStoreProcessWithFixDeadlock) {
+	bool rslt = false;
 	if(isCloud()) {
 		string preparedQuery = this->prepareQuery(query, false);
 		if(verbosity > 1) {
@@ -758,6 +782,7 @@ bool SqlDb_mysql::query(string query, bool callFromStoreProcessWithFixDeadlock) 
 		}
 		return(this->queryByCurl(preparedQuery));
 	}
+#ifdef ENABLE_MYSQL
 	if(this->hMysqlRes) {
 		while(mysql_fetch_row(this->hMysqlRes));
 		mysql_free_result(this->hMysqlRes);
@@ -777,7 +802,6 @@ bool SqlDb_mysql::query(string query, bool callFromStoreProcessWithFixDeadlock) 
 			this->reconnect();
 		}
 	}
-	bool rslt = false;
 	this->cleanFields();
 	unsigned int attempt = 1;
 	for(unsigned int pass = 0; pass < this->maxQueryPass; pass++) {
@@ -841,6 +865,7 @@ bool SqlDb_mysql::query(string query, bool callFromStoreProcessWithFixDeadlock) 
 			break;
 		}
 	}
+#endif
 	return(rslt);
 }
 
@@ -854,6 +879,7 @@ SqlDb_row SqlDb_mysql::fetchRow(bool assoc) {
 			}
 			++cloud_data_index;
 		}
+#ifdef ENABLE_MYSQL
 	} else if(this->hMysqlConn) {
 		if(!this->hMysqlRes) {
 			this->hMysqlRes = mysql_use_result(this->hMysqlConn);
@@ -877,14 +903,17 @@ SqlDb_row SqlDb_mysql::fetchRow(bool assoc) {
 				this->checkLastError("fetch row error", true);
 			}
 		}
+#endif
 	}
 	return(row);
 }
 
 int SqlDb_mysql::getInsertId() {
+#ifdef ENABLE_MYSQL
 	if(this->hMysqlConn) {
 		return(mysql_insert_id(this->hMysqlConn));
 	}
+#endif
 	return(-1);
 }
 
@@ -893,6 +922,7 @@ string SqlDb_mysql::escape(const char *inputString, int length) {
 }
 
 bool SqlDb_mysql::checkLastError(string prefixError, bool sysLog, bool clearLastError) {
+#ifdef ENABLE_MYSQL
 	if(this->hMysql) {
 		unsigned int errnoMysql = mysql_errno(this->hMysql);
 		if(errnoMysql) {
@@ -904,6 +934,7 @@ bool SqlDb_mysql::checkLastError(string prefixError, bool sysLog, bool clearLast
 			this->clearLastError();
 		}
 	}
+#endif
 	return(false);
 }
 
@@ -1375,8 +1406,10 @@ void MySqlStore_process::_store(string beginProcedure, string endProcedure, stri
 					      preparedQueries + 
 					      endProcedure)) {
 				break;
+#ifdef ENABLE_MYSQL
 			} else if(this->sqlDb->getLastError() == ER_SP_ALREADY_EXISTS) {
 				this->sqlDb->query("repair table mysql.proc");
+#endif
 			} else {
 				if(sverb.store_process_query) {
 					cout << "store_process_query_" << this->id << ": " << "ERROR " << this->sqlDb->getLastErrorString() << endl;
@@ -1391,11 +1424,13 @@ void MySqlStore_process::_store(string beginProcedure, string endProcedure, stri
 		*/
 		if(rsltQuery) {
 			break;
+#ifdef ENABLE_MYSQL
 		} else if(this->sqlDb->getLastError() == ER_LOCK_DEADLOCK) {
 			if(passComplete < maxPassComplete - 1) {
 				syslog(LOG_INFO, "DEADLOCK in store %u - next attempt %u", this->id, passComplete + 1);
 				usleep(500000);
 			}
+#endif
 		} else {
 			if(sverb.store_process_query) {
 				cout << "store_process_query_" << this->id << ": " << "ERROR " << this->sqlDb->getLastErrorString() << endl;
@@ -4775,6 +4810,7 @@ void SqlDb_odbc::checkSchema() {
 }
 #endif
 
+#ifdef ENABLE_MYSQL
 void createMysqlPartitionsCdr() {
 	syslog(LOG_NOTICE, "create cdr partitions - begin");
 	SqlDb *sqlDb = createSqlObject();
@@ -5033,3 +5069,5 @@ void dropMysqlPartitionsCdr() {
 		syslog(LOG_NOTICE, "drop old partitions - end");
 	}
 }
+#endif
+

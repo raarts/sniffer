@@ -30,6 +30,7 @@
 
 //#include <.h>
 
+#include "config.h"
 #include "voipmonitor.h"
 #include "calltable.h"
 #include "format_wav.h"

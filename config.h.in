@@ -6,6 +6,9 @@
 /* Define if you need manager support */
 #undef ENABLE_MANAGER
 
+/* Define if you want MySQL */
+#undef ENABLE_MYSQL
+
 /* Define if need Skinny protocol */
 #undef ENABLE_SKINNY
 
