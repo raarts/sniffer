@@ -698,6 +698,7 @@ bool SqlDb_mysql::createRoutine(string routine, string routineName, string routi
 	if(this->isCloud()) {
 		missing = true;
 		diff = true;
+#ifdef ENABLE_MYSQL
 	} else {
 		this->query(string("select routine_definition from information_schema.routines where routine_schema='") + this->conn_database + 
 			    "' and routine_name='" + routineName + 
@@ -724,6 +725,7 @@ bool SqlDb_mysql::createRoutine(string routine, string routineName, string routi
 				diff = true;
 			}
 		}
+#endif
 	}
 	if(missing || diff) {
 		syslog(LOG_NOTICE, "create %s %s", (routineType == procedure ? "procedure" : "function"), routineName.c_str());
@@ -2091,7 +2093,7 @@ string prepareQueryForPrintf(string &query) {
 
 
 void SqlDb_mysql::createSchema(const char *host, const char *database, const char *user, const char *password) {
- 
+#ifdef ENABLE_MYSQL 
 	bool federated = host && database && user;
 	string federatedSuffix =federated ? "_fed" : "";
 	string federatedConnection = federated ? 
@@ -3698,6 +3700,7 @@ void SqlDb_mysql::createSchema(const char *host, const char *database, const cha
 	sql_disable_next_attempt_if_error = 0;
 
 	syslog(LOG_DEBUG, "done");
+#endif
 }
 
 void SqlDb_mysql::checkDbMode() {
