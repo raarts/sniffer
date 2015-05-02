@@ -667,6 +667,7 @@ with_spool
 with_manager
 with_mysql
 with_heapsafe
+with_backtrace
 with_odbc
 with_oggvorbis
 with_snappy
@@ -1300,6 +1301,7 @@ Optional Packages:
   --without-manager       disable manager support
   --without-mysql         disable MySQL
   --without-heapsafe      disable safe heap checking
+  --without-backtrace     disable backtracing
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
   --without-snappy        disable support for snappy
@@ -1519,6 +1521,73 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_try_link
+
+# ac_fn_c_check_func LINENO FUNC VAR
+# ----------------------------------
+# Tests whether FUNC exists, setting the cache variable VAR accordingly
+ac_fn_c_check_func ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+$as_echo_n "checking for $2... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+/* Define $2 to an innocuous variant, in case <limits.h> declares $2.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define $2 innocuous_$2
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char $2 (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef $2
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char $2 ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined __stub_$2 || defined __stub___$2
+choke me
+#endif
+
+int
+main ()
+{
+return $2 ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  eval "$3=yes"
+else
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_func
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -1935,6 +2004,14 @@ if test "${with_heapsafe+set}" = set; then :
   withval=$with_heapsafe;
 else
   with_heapsafe=yes
+fi
+
+
+# Check whether --with-backtrace was given.
+if test "${with_backtrace+set}" = set; then :
+  withval=$with_backtrace;
+else
+  with_backtrace=yes
 fi
 
 
@@ -4410,6 +4487,17 @@ fi
 #AC_FUNC_STRNLEN
 #AC_FUNC_STRTOD
 #AC_CHECK_FUNCS([gethostbyname gettimeofday inet_ntoa memmove memset mkdir mkfifo pow select setenv setlocale socket sqrt strcasecmp strchr strdup strerror strncasecmp strndup strstr strtol])
+for ac_func in powl
+do :
+  ac_fn_c_check_func "$LINENO" "powl" "ac_cv_func_powl"
+if test "x$ac_cv_func_powl" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_POWL 1
+_ACEOF
+
+fi
+done
+
 
 if test "x$with_skinny" != xno ; then
 
@@ -4463,6 +4551,15 @@ $as_echo "#define ENABLE_HEAPSAFE 1" >>confdefs.h
 	ENABLE_HEAPSAFE_T=yes
 else
 	ENABLE_HEAPSAFE_T=no
+fi
+
+if test "x$with_backtrace" != xno ; then
+
+$as_echo "#define ENABLE_BACKTRACE 1" >>confdefs.h
+
+	ENABLE_BACKTRACE_T=yes
+else
+	ENABLE_BACKTRACE_T=no
 fi
 
 ac_config_files="$ac_config_files Makefile simpleini/Makefile"
@@ -5778,6 +5875,7 @@ fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
 manager enabled                        : $ENABLE_MANAGER_T
 heap checking enabled                  : $ENABLE_HEAPSAFE_T
+backtracing enabled                    : $ENABLE_BACKTRACE_T
 
 shared binary: run make
 static binary: run make static
@@ -5815,6 +5913,7 @@ fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
 manager enabled                        : $ENABLE_MANAGER_T
 heap checking enabled                  : $ENABLE_HEAPSAFE_T
+backtracing enabled                    : $ENABLE_BACKTRACE_T
 
 shared binary: run make
 static binary: run make static

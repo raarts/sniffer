@@ -16,6 +16,10 @@ Author: Martin Vit support@voipmonitor.org
 #include <stdio.h>
 #include "voipmonitor.h"
 
+#ifndef HAVE_POWL
+#define powl pow
+#endif
+
 long double mos_g729(long double l, long double b) {
 
 	l *= 100.0;

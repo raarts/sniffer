@@ -316,7 +316,7 @@ void * operator new[](size_t sizeOfObject) {
 #endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
-		syslog(LOG_ERR, "allocation (operator new[]) failed - size %lu", sizeOfObject);
+		syslog(LOG_ERR, "allocation (operator new[]) failed - size %lu", (unsigned long)sizeOfObject);
 	}
 	return(newPointer);
 }
@@ -331,7 +331,7 @@ void * operator new(size_t sizeOfObject, const char *memory_type1, int memory_ty
 #endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
-		syslog(LOG_ERR, "allocation (operator new) failed - size %lu, %s, %i", sizeOfObject, memory_type1 ? memory_type1 : "", memory_type2);
+		syslog(LOG_ERR, "allocation (operator new) failed - size %lu, %s, %i", (unsigned long)sizeOfObject, memory_type1 ? memory_type1 : "", memory_type2);
 	}
 	return(newPointer);
 }
@@ -346,7 +346,7 @@ void * operator new[](size_t sizeOfObject, const char *memory_type1, int memory_
 #endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
-		syslog(LOG_ERR, "allocation (operator new[]) failed - size %lu, %s, %i", sizeOfObject, memory_type1 ? memory_type1 : "", memory_type2);
+		syslog(LOG_ERR, "allocation (operator new[]) failed - size %lu, %s, %i", (unsigned long)sizeOfObject, memory_type1 ? memory_type1 : "", memory_type2);
 	}
 	return(newPointer);
 }

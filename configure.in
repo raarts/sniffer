@@ -308,6 +308,7 @@ fi
 #AC_FUNC_STRNLEN
 #AC_FUNC_STRTOD
 #AC_CHECK_FUNCS([gethostbyname gettimeofday inet_ntoa memmove memset mkdir mkfifo pow select setenv setlocale socket sqrt strcasecmp strchr strdup strerror strncasecmp strndup strstr strtol])
+AC_CHECK_FUNCS([powl])
 
 if test "x$with_skinny" != xno ; then
 	AC_DEFINE([ENABLE_SKINNY], [1], [Define if need Skinny protocol])
