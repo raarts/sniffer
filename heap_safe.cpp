@@ -1,10 +1,12 @@
+#include "config.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <malloc.h>
+#ifdef ENABLE_BACKTRACE
 #include <execinfo.h>
+#endif
 
-#include "config.h"
 #include "heap_safe.h"
 #include "tools.h"
 #include "common.h"
@@ -161,6 +163,7 @@ inline void * heapsafe_alloc(size_t sizeOfObject, const char *memory_type1 = NUL
 						}
 						__sync_fetch_and_add(&memoryStatOther[beginEx->memory_type_other], sizeOfObject);
 					} else {
+#ifdef ENABLE_BACKTRACE
 						uint skip_top_traces = 2;
 						uint max_use_trace_size = 8;
 						uint max_trace_size = skip_top_traces + max_use_trace_size;
@@ -203,6 +206,7 @@ inline void * heapsafe_alloc(size_t sizeOfObject, const char *memory_type1 = NUL
 							__sync_fetch_and_add(&memoryStatOther[beginEx->memory_type_other], sizeOfObject);
 						}
 					}
+#endif
 				} else {
 					beginEx->memory_type_other = 0;
 					__sync_fetch_and_add(&memoryStatOtherSum, sizeOfObject);

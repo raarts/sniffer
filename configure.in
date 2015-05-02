@@ -14,6 +14,7 @@ AC_ARG_WITH([spool], [AS_HELP_STRING([--without-spool], [disable support spool d
 AC_ARG_WITH([manager], [AS_HELP_STRING([--without-manager], [disable manager support])], [], [with_manager=yes])
 AC_ARG_WITH([mysql], [AS_HELP_STRING([--without-mysql], [disable MySQL])], [])
 AC_ARG_WITH([heapsafe], [AS_HELP_STRING([--without-heapsafe], [disable safe heap checking])], [], [with_heapsafe=yes])
+AC_ARG_WITH([backtrace], [AS_HELP_STRING([--without-backtrace], [disable backtracing])], [], [with_backtrace=yes])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -350,6 +351,13 @@ else
 	ENABLE_HEAPSAFE_T=no
 fi
 
+if test "x$with_backtrace" != xno ; then
+	AC_DEFINE([ENABLE_BACKTRACE], [1], [Define if you need backtrace support])
+	ENABLE_BACKTRACE_T=yes
+else
+	ENABLE_BACKTRACE_T=no
+fi
+
 AC_CONFIG_FILES([Makefile
                  simpleini/Makefile])
 
@@ -385,6 +393,7 @@ fraud detection enabled                : $ENABLE_FRAUD_T
 spool directory support enabled        : $ENABLE_SPOOL_T
 manager enabled                        : $ENABLE_MANAGER_T
 heap checking enabled                  : $ENABLE_HEAPSAFE_T
+backtracing enabled                    : $ENABLE_BACKTRACE_T
 
 shared binary: run make 
 static binary: run make static

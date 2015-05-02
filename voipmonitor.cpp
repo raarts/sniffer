@@ -45,7 +45,9 @@
 #include <sys/resource.h>
 #include <semaphore.h>
 #include <signal.h>
+#ifdef ENABLE_BACKTRACE
 #include <execinfo.h>
+#endif
 #include <sstream>
 #include <dirent.h>
 
@@ -96,11 +98,7 @@ extern "C" {
 }
 #endif
 
-#ifndef FREEBSD
-#define BACKTRACE 1
-#endif
-
-#ifdef BACKTRACE
+#ifdef ENABLE_BACKTRACE
 /* Since kernel version 2.2 the undocumented parameter to the signal handler has been declared
 obsolete in adherence with POSIX.1b. A more correct way to retrieve additional information is
 to use the SA_SIGINFO option when setting the handler */
@@ -3052,7 +3050,7 @@ void reload_capture_rules() {
 
 }
 
-#ifdef BACKTRACE
+#ifdef ENABLE_BACKTRACE
 #ifndef USE_SIGCONTEXT
 void bt_sighandler(int sig, siginfo_t *info, void *secret)
 #else
@@ -3641,7 +3639,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-#ifdef BACKTRACE
+#ifdef ENABLE_BACKTRACE
 	
 	if(!sverb.disable_bt_sighandler) {
 		/* Install our signal handler */
