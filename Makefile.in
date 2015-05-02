@@ -1,34 +1,3 @@
-##### CPU variants #####
-GCCARCH = $(shell uname -m)
-
-ifeq ($(GCCARCH),amd64)
-  GCCARCH = core2
-endif
-
-ifeq ($(GCCARCH),i386)
-  GCCARCH = core2
-endif
-
-ifeq ($(GCCARCH),x86_64)
-  GCCARCH = core2
-endif
-
-GCCVERSION = $(shell gcc --version | grep ^gcc | sed 's/^.* //g' | cut -f1,2 -d.)
-ifeq "$(GCCVERSION)" "4.1"
-  GCCARCH = core2
-endif
-
-ifeq ($(findstring arm,$(GCCARCH)),arm)
-  GCCARCH = armv6k
-endif
-
-GCCARCH = native
-
-#core2cust: GCCARCH = core2
-#core2: GCCARCH = core2
-#clean: GCCARCH = core2
-#Makefile.deps: GCCARCH = core2
-
 
 version = $(shell grep RTPSENSOR_VERSION voipmonitor.h | cut -d" " -f 3 | tr -d "\"")
 
@@ -60,7 +29,7 @@ SHARED_LIBS = ${LIBLD} -lpthread -lpcap -lz ${LIBOGGVORBIS} ${LIBODBC} ${MYSQLLI
 STATIC_LIBS = -static @LIBTCMALLOC@ ${LIBODBC} -lltdl ${LIBLD} -lrt -lz ${LIBSSH} -lcrypt -lm -lcurl -lssl -lcrypto -static-libstdc++ -static-libgcc -lpcap -lpthread ${MYSQLLIB} -lpthread -lz -lc ${LIBOGGVORBIS} -lrt ${LIBSNAPPY} ${JSONLIB} ${LIBRRD} 
 INCLUDES =  -I/usr/local/include ${MYSQLINC} -I jitterbuffer/ ${JSONCFLAGS} ${GLIBCFLAGS}
 LIBS_PATH = -L/usr/local/lib/ 
-CXXFLAGS +=  -Wall -fPIC -g3 -O2 -march=$(GCCARCH) ${INCLUDES}
+CXXFLAGS +=  -Wall -fPIC -g3 -O2 ${INCLUDES}
 CFLAGS += ${CXXFLAGS}
 LIBS = ${SHARED_LIBS} 
 LIBS2 = @LIBS2@
