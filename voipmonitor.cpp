@@ -2773,7 +2773,7 @@ void set_context_config() {
 				u_int64_t totalMemory = getTotalMemory();
 				if(buffersControl.getMaxBufferMem() > totalMemory / 2) {
 					buffersControl.setMaxBufferMem(totalMemory / 2);
-					syslog(LOG_NOTICE, "set buffer memory limit to %lu", totalMemory / 2);
+					syslog(LOG_NOTICE, "set buffer memory limit to %lu", (long unsigned int)(totalMemory / 2));
 				}
 			}
 			// prepare for old buffer size calculate

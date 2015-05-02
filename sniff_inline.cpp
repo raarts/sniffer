@@ -276,7 +276,7 @@ int pcapProcess(pcap_pkthdr** header, u_char** packet, bool *destroy,
                                                
 	if(enableDefrag) {
 		// if IP defrag is enabled, run each 10 seconds cleaning 
-		if(opt_udpfrag && (ppd->ipfrag_lastprune + 10) < (*header)->ts.tv_sec) {
+		if(opt_udpfrag && (ppd->ipfrag_lastprune + 10) < (unsigned long) (*header)->ts.tv_sec) {
 			ipfrag_prune((*header)->ts.tv_sec, 0, &ppd->ipfrag_data);
 			ppd->ipfrag_lastprune = (*header)->ts.tv_sec;
 			//TODO it would be good to still pass fragmented packets even it does not contain the last semant, the ipgrad_prune just wipes all unfinished frags

@@ -1004,7 +1004,7 @@ int get_sip_branch(char *data, int data_len, const char *tag, char *branch, unsi
 	if(!branchEnd) {
 		branchEnd = branchBegin + branch_tag_len - (branchBegin - branch_tag);
 	}
-	if(branchEnd <= branchBegin || ((branchEnd - branchBegin) > branch_len)) {
+	if(branchEnd <= branchBegin || ((unsigned int)(branchEnd - branchBegin) > branch_len)) {
 		goto fail_exit;
 	}
 	memcpy(branch, branchBegin, MIN(branchEnd - branchBegin, branch_len));

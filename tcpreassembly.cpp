@@ -411,7 +411,7 @@ bool TcpReassemblyStream::saveCompleteData(bool unlockPackets, bool check, TcpRe
 							if(this->http_content_length) {
 								if(!this->_ignore_expect_continue &&
 								   strcasestr((char*)data, "Expect: 100-continue")) {
-									if(((u_char*)pointToEndHeader - data) + 4 == datalen) {
+									if((u_int32_t)((u_char*)pointToEndHeader - data) + 4 == datalen) {
 										this->http_ok = true;
 									} else if(((u_char*)pointToEndHeader - data) + 4 + http_content_length == datalen) {
 										this->http_ok = true;
@@ -422,7 +422,7 @@ bool TcpReassemblyStream::saveCompleteData(bool unlockPackets, bool check, TcpRe
 									this->http_ok = true;
 								}
 							} else {
-								if(((u_char*)pointToEndHeader - data) + 4 == datalen) {
+								if((u_int32_t)((u_char*)pointToEndHeader - data) + 4 == datalen) {
 									this->http_ok = true;
 								}
 							}
@@ -2123,7 +2123,7 @@ void TcpReassembly::_push(pcap_pkthdr *header, iphdr2 *header_ip, u_char *packet
 	header_tcp_pointer = (tcphdr2*)((u_char*)header_ip + sizeof(*header_ip));
 	data = (u_char*)header_tcp_pointer + (header_tcp_pointer->doff << 2);
 	
-	if((data - packet) > header->caplen) {
+	if((uint64_t)(data - packet) > header->caplen) {
 		return;
 	}
 	

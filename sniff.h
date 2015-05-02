@@ -344,7 +344,7 @@ private:
 				bool okLength = false;
 				if(contentLengthPos) {
 					unsigned int contentLength = atol(contentLengthPos + 16);
-					if((endHeaderSepPos - stream->data) + 4 + contentLength == stream->datalen) {
+					if((endHeaderSepPos - stream->data) + 4 + contentLength == (unsigned int) stream->datalen) {
 						okLength = true;
 					}
 				}

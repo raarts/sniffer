@@ -301,7 +301,7 @@ void * operator new(size_t sizeOfObject) {
 #endif
 			    _heapsafe_alloc(sizeOfObject);
 	if(!newPointer) {
-		syslog(LOG_ERR, "allocation (operator new) failed - size %lu", sizeOfObject);
+		syslog(LOG_ERR, "allocation (operator new) failed - size %lu", (long unsigned int)sizeOfObject);
 	}
 	return(newPointer);
 }
