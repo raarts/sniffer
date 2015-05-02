@@ -13,16 +13,16 @@ ifeq ($(GCCARCH),x86_64)
   GCCARCH = core2
 endif
 
+GCCVERSION = $(shell gcc --version | grep ^gcc | sed 's/^.* //g' | cut -f1,2 -d.)
+ifeq "$(GCCVERSION)" "4.1"
+  GCCARCH = core2
+endif
+
 ifeq ($(findstring arm,$(GCCARCH)),arm)
   GCCARCH = armv6k
 endif
 
 GCCARCH = native
-
-GCCVERSION = $(shell gcc --version | grep ^gcc | sed 's/^.* //g' | cut -f1,2 -d.)
-ifeq "$(GCCVERSION)" "4.1"
-  GCCARCH = core2
-endif
 
 core2cust: GCCARCH = core2
 core2: GCCARCH = core2
