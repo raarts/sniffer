@@ -665,13 +665,13 @@ with_tar
 with_fraud
 with_spool
 with_manager
+with_mysql
 with_heapsafe
 with_odbc
 with_oggvorbis
 with_snappy
 with_ssh
 with_rrd
-with_mysql
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1298,6 +1298,7 @@ Optional Packages:
   --without-fraud         disable support for fraud detection
   --without-spool         disable support spool directory
   --without-manager       disable manager support
+  --without-mysql         disable MySQL
   --without-heapsafe      disable safe heap checking
   --without-odbc          disable support for odbc
   --without-oggvorbis     disable support for ogg vorbis
@@ -1920,6 +1921,14 @@ if test "${with_manager+set}" = set; then :
   withval=$with_manager;
 else
   with_manager=yes
+fi
+
+
+# Check whether --with-mysql was given.
+if test "${with_mysql+set}" = set; then :
+  withval=$with_mysql;
+else
+  with_mysql=yes
 fi
 
 

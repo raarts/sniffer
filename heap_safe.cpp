@@ -4,6 +4,7 @@
 #include <malloc.h>
 #include <execinfo.h>
 
+#include "config.h"
 #include "heap_safe.h"
 #include "tools.h"
 #include "common.h"

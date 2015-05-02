@@ -12,6 +12,7 @@ AC_ARG_WITH([tar], [AS_HELP_STRING([--without-tar], [disable support for tar])],
 AC_ARG_WITH([fraud], [AS_HELP_STRING([--without-fraud], [disable support for fraud detection])], [], [with_fraud=yes])
 AC_ARG_WITH([spool], [AS_HELP_STRING([--without-spool], [disable support spool directory])], [], [with_spool=yes])
 AC_ARG_WITH([manager], [AS_HELP_STRING([--without-manager], [disable manager support])], [], [with_manager=yes])
+AC_ARG_WITH([mysql], [AS_HELP_STRING([--without-mysql], [disable MySQL])], [], [with_mysql=yes])
 AC_ARG_WITH([heapsafe], [AS_HELP_STRING([--without-heapsafe], [disable safe heap checking])], [], [with_heapsafe=yes])
 
 # Checks for programs.
