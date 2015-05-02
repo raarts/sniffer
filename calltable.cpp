@@ -8,7 +8,7 @@
   * on Call list. Call class implements operations on one call. 
 */
 
-
+#include "voipmonitor.h"
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,8 +30,6 @@
 
 //#include <.h>
 
-#include "config.h"
-#include "voipmonitor.h"
 #include "calltable.h"
 #include "format_wav.h"
 #include "format_ogg.h"
@@ -481,7 +479,7 @@ Call::_addtocachequeue(string file) {
 
 void
 Call::removeRTP() {
-	while(__sync_lock_test_and_set(&rtplock, 1)) {
+	while(ATOMIC_TEST_AND_SET(&rtplock, 1)) {
 		usleep(100);
 	}
 	closeRawFiles();
@@ -499,7 +497,7 @@ Call::removeRTP() {
 	}
 	lastcallerrtp = NULL;
 	lastcalledrtp = NULL;
-	__sync_lock_release(&rtplock);
+	ATOMIC_CLEAR(&rtplock);
 	use_removeRtp = true;
 }
 
@@ -881,7 +879,7 @@ read:
 				lastcalledrtp->jt_tail(header);
 			}
 		}
-		while(__sync_lock_test_and_set(&rtplock, 1)) {
+		while(ATOMIC_TEST_AND_SET(&rtplock, 1)) {
 			usleep(100);
 		}
 		rtp[ssrc_n] = new FILE_LINE RTP(sensor_id);
@@ -959,7 +957,7 @@ read:
 			lastcalledrtp = rtp[ssrc_n];
 		}
 		ssrc_n++;
-		__sync_lock_release(&rtplock);
+		ATOMIC_CLEAR(&rtplock);
 	}
 	
 end:

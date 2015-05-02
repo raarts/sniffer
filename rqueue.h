@@ -177,10 +177,10 @@ public:
 	void incBuffer();
 	void printBuffer();
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync_lock, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_lock, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync_lock);
+		ATOMIC_CLEAR(&this->_sync_lock);
 	}
 	void _test();
 	void _testPerf(bool useRqueue);
@@ -466,10 +466,10 @@ public:
 		return(true);
 	}
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync_lock, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_lock, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync_lock);
+		ATOMIC_CLEAR(&this->_sync_lock);
 	}
 	size_t size() {
 		return(writeit >= readit ? writeit - readit : writeit + length - readit);
@@ -534,10 +534,10 @@ public:
 		return(true);
 	}
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync_lock, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_lock, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync_lock);
+		ATOMIC_CLEAR(&this->_sync_lock);
 	}
 private:
 	boost::lockfree::spsc_queue<typeItem, boost::lockfree::capacity<20000> > spsc_queue;

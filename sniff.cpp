@@ -396,7 +396,7 @@ inline void save_live_packet(Call *call, struct pcap_pkthdr *header, const u_cha
 		return;
 	}
 
-	while(__sync_lock_test_and_set(&usersniffer_sync, 1));
+	while(ATOMIC_TEST_AND_SET(&usersniffer_sync, 1));
 	
 	map<unsigned int, livesnifferfilter_t*>::iterator usersnifferIT;
 	
@@ -492,7 +492,7 @@ inline void save_live_packet(Call *call, struct pcap_pkthdr *header, const u_cha
 		}
 	}
 	
-	__sync_lock_release(&usersniffer_sync);
+	ATOMIC_CLEAR(&usersniffer_sync);
 }
 
 /*
@@ -1298,7 +1298,7 @@ void add_to_rtp_thread_queue(Call *call, unsigned char *data, int datalen, int d
 	
 	if(!preSyncRtp) {
 		#if SYNC_CALL_RTP
-		__sync_add_and_fetch(&call->rtppcaketsinqueue, 1);
+		ATOMIC_FETCH_AND_ADD(&call->rtppcaketsinqueue, 1);
 		#else
 		++call->rtppcaketsinqueue_p;
 		#endif
@@ -1549,13 +1549,13 @@ void *rtp_read_thread_func(void *arg) {
 
 		if(opt_pcap_queue) {
 			#if SYNC_CALL_RTP
-			__sync_sub_and_fetch(&rtpp_pq.call->rtppcaketsinqueue, 1);
+			ATOMIC_FETCH_AND_SUB(&rtpp_pq.call->rtppcaketsinqueue, 1);
 			#else
 			++rtpp_pq.call->rtppcaketsinqueue_m;
 			#endif
 		} else {
 			#if SYNC_CALL_RTP
-			__sync_sub_and_fetch(&rtpp->call->rtppcaketsinqueue, 1);
+			ATOMIC_FETCH_AND_SUB(&rtpp->call->rtppcaketsinqueue, 1);
 			#else
 			++rtpp->call->rtppcaketsinqueue_m;
 			#endif
@@ -3818,7 +3818,7 @@ Call *process_packet__rtp(ProcessRtpPacket::rtp_call_info *call_info,size_t call
 		for(call_info_index = 0; call_info_index < call_info_length; call_info_index++) {
 			if(!call_info[call_info_index].use_sync) {
 				#if SYNC_CALL_RTP
-				__sync_sub_and_fetch(&call_info[call_info_index].call->rtppcaketsinqueue, 1);
+				ATOMIC_FETCH_AND_SUB(&call_info[call_info_index].call->rtppcaketsinqueue, 1);
 				#else
 				++call_info[call_info_index].call->rtppcaketsinqueue_m;
 				#endif
@@ -5391,7 +5391,7 @@ void ProcessRtpPacket::rtp(packet_s *_packet) {
 			call_info[call_info_length].is_fax = node_call->is_fax;
 			call_info[call_info_length].use_sync = false;
 			#if SYNC_CALL_RTP
-			__sync_add_and_fetch(&node_call->call->rtppcaketsinqueue, 1);
+			ATOMIC_FETCH_AND_ADD(&node_call->call->rtppcaketsinqueue, 1);
 			#else
 			++node_call->call->rtppcaketsinqueue_p;
 			#endif

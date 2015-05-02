@@ -309,6 +309,27 @@ fi
 #AC_FUNC_STRTOD
 #AC_CHECK_FUNCS([gethostbyname gettimeofday inet_ntoa memmove memset mkdir mkfifo pow select setenv setlocale socket sqrt strcasecmp strchr strdup strerror strncasecmp strndup strstr strtol])
 AC_CHECK_FUNCS([powl])
+AC_MSG_CHECKING([for __sync_fetch_and_add])
+AC_LINK_IFELSE(
+   [AC_LANG_SOURCE([
+    int main(void) { return __sync_fetch_and_add((int *)0, 0); }
+   ])],
+   [AC_MSG_RESULT([yes])
+    AC_DEFINE([HAVE__SYNC_FETCH_AND_ADD], [1], [Define if we have __sync_fetch_and_add])
+   ],
+   [AC_MSG_RESULT([no])]
+)
+
+AC_MSG_CHECKING([for __atomic_fetch_add])
+AC_LINK_IFELSE(
+   [AC_LANG_SOURCE([
+    int main(void) { return __atomic_fetch_add ((int *)0, 0, 0); }
+   ])],
+   [AC_MSG_RESULT([yes])
+    AC_DEFINE([HAVE__ATOMIC_FETCH_ADD], [1], [Define if we have __atomic_fetch_add])
+   ],
+   [AC_MSG_RESULT([no])]
+)
 
 if test "x$with_skinny" != xno ; then
 	AC_DEFINE([ENABLE_SKINNY], [1], [Define if need Skinny protocol])

@@ -84,8 +84,8 @@ extern volatile unsigned int glob_last_packet_time;
 
 map<void*, unsigned int> okTarPointers;
 volatile int _sync_okTarPointers;
-inline void lock_okTarPointers() { while(__sync_lock_test_and_set(&_sync_okTarPointers, 1)); }
-inline void unlock_okTarPointers() { __sync_lock_release(&_sync_okTarPointers); }
+inline void lock_okTarPointers() { while(ATOMIC_TEST_AND_SET(&_sync_okTarPointers, 1)); }
+inline void unlock_okTarPointers() { ATOMIC_CLEAR(&_sync_okTarPointers); }
 
 
 /* magic, version, and checksum */
@@ -917,7 +917,7 @@ Tar::~Tar() {
 
 void			   
 TarQueue::add(string filename, unsigned int time, ChunkBuffer *buffer){
-	__sync_add_and_fetch(&glob_tar_queued_files, 1);
+	ATOMIC_FETCH_AND_ADD(&glob_tar_queued_files, 1);
 	data_t data;
 	data.buffer = buffer;
 	lock();
@@ -1404,7 +1404,7 @@ TarQueue::tarthreads_t::processData(data_t *data, bool isClosed, size_t lenForPr
 		}
 		delete data->buffer;
 		//tar->incClosedPartCounter();
-		__sync_sub_and_fetch(&glob_tar_queued_files, 1);
+		ATOMIC_FETCH_AND_SUB(&glob_tar_queued_files, 1);
 	}
 	
 	#if TAR_PROF

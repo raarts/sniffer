@@ -1,3 +1,4 @@
+#include "voipmonitor.h"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -19,7 +20,6 @@
 #include "codecs.h"
 #include "calltable.h"
 #include "sniff.h"
-#include "voipmonitor.h"
 #include "filter_mysql.h"
 #include "hash.h"
 #include "rtp.h"

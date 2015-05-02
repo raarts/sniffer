@@ -23,10 +23,10 @@ public:
 		return(this->pcap_store_queue__sizeOfBlocksInMemory);
 	}
 	void add__pcap_store_queue__sizeOfBlocksInMemory(size_t size) {
-		__sync_fetch_and_add(&this->pcap_store_queue__sizeOfBlocksInMemory, size);
+		ATOMIC_FETCH_AND_ADD(&this->pcap_store_queue__sizeOfBlocksInMemory, size);
 	}
 	void sub__pcap_store_queue__sizeOfBlocksInMemory(size_t size) {
-		__sync_fetch_and_sub(&this->pcap_store_queue__sizeOfBlocksInMemory, size);
+		ATOMIC_FETCH_AND_SUB(&this->pcap_store_queue__sizeOfBlocksInMemory, size);
 	}
 	//PcapQueue_readFromFifo::blockStoreTrash_size
 	void set__PcapQueue_readFromFifo__blockStoreTrash_size(volatile u_int64_t *blockStoreTrash_size) {
@@ -36,10 +36,10 @@ public:
 		return(this->PcapQueue_readFromFifo__blockStoreTrash_size);
 	}
 	void add__PcapQueue_readFromFifo__blockStoreTrash_size(size_t size) {
-		__sync_fetch_and_add(&this->PcapQueue_readFromFifo__blockStoreTrash_size, size);
+		ATOMIC_FETCH_AND_ADD(&this->PcapQueue_readFromFifo__blockStoreTrash_size, size);
 	}
 	void sub__PcapQueue_readFromFifo__blockStoreTrash_size(size_t size) {
-		__sync_fetch_and_sub(&this->PcapQueue_readFromFifo__blockStoreTrash_size, size);
+		ATOMIC_FETCH_AND_SUB(&this->PcapQueue_readFromFifo__blockStoreTrash_size, size);
 	}
 	//AsyncClose::sizeOfDataInMemory
 	void set__AsyncClose__sizeOfDataInMemory(volatile u_int64_t *sizeOfDataInMemory) {
@@ -49,10 +49,10 @@ public:
 		return(this->AsyncClose__sizeOfDataInMemory);
 	}
 	void add__AsyncClose__sizeOfDataInMemory(size_t size) {
-		__sync_fetch_and_add(&this->AsyncClose__sizeOfDataInMemory, size);
+		ATOMIC_FETCH_AND_ADD(&this->AsyncClose__sizeOfDataInMemory, size);
 	}
 	void sub__AsyncClose__sizeOfDataInMemory(size_t size) {
-		__sync_fetch_and_sub(&this->AsyncClose__sizeOfDataInMemory, size);
+		ATOMIC_FETCH_AND_SUB(&this->AsyncClose__sizeOfDataInMemory, size);
 	}
 	//
 	bool check__pcap_store_queue__push() {

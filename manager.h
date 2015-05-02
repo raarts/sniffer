@@ -25,10 +25,10 @@ public:
 			    unsigned int sipSaddr, unsigned int sipDaddr) {}
 protected:
 	void lock_responses() {
-		while(__sync_lock_test_and_set(&this->_sync_responses, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_responses, 1));
 	}
 	void unlock_responses() {
-		__sync_lock_release(&this->_sync_responses);
+		ATOMIC_CLEAR(&this->_sync_responses);
 	}
 protected:
 	int client;
@@ -86,10 +86,10 @@ public:
 	int getCount();
 private:
 	void lock_client_threads() {
-		while(__sync_lock_test_and_set(&this->_sync_client_threads, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_client_threads, 1));
 	}
 	void unlock_client_threads() {
-		__sync_lock_release(&this->_sync_client_threads);
+		ATOMIC_CLEAR(&this->_sync_client_threads);
 	}
 private: 
 	std::vector<ManagerClientThread*> clientThreads;

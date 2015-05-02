@@ -585,10 +585,10 @@ public:
 	u_int32_t getAllReceivedRtpPackets();
 	
 	void incChunkBuffers() {
-		__sync_add_and_fetch(&chunkBuffersCount, 1);
+		ATOMIC_FETCH_AND_ADD(&chunkBuffersCount, 1);
 	}
 	void decChunkBuffers() {
-		__sync_sub_and_fetch(&chunkBuffersCount, 1);
+		ATOMIC_FETCH_AND_SUB(&chunkBuffersCount, 1);
 	}
 	
 	void addTarPos(u_int64_t pos, int type);
@@ -769,10 +769,10 @@ public:
 	void destroyCallsIfPcapsClosed();
 	
 	void lock_calls_hash() {
-		while(__sync_lock_test_and_set(&this->_sync_lock_calls_hash, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_lock_calls_hash, 1));
 	}
 	void unlock_calls_hash() {
-		__sync_lock_release(&this->_sync_lock_calls_hash);
+		ATOMIC_CLEAR(&this->_sync_lock_calls_hash);
 	}
 private:
 	pthread_mutex_t qlock;		//!< mutex locking calls_queue
@@ -842,10 +842,10 @@ public:
 	string getQueryForSaveUseInfo(Call *call);
 private:
 	void lock_custom_headers() {
-		while(__sync_lock_test_and_set(&this->_sync_custom_headers, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_custom_headers, 1));
 	}
 	void unlock_custom_headers() {
-		__sync_lock_release(&this->_sync_custom_headers);
+		ATOMIC_CLEAR(&this->_sync_custom_headers);
 	}
 private:
 	eType type;

@@ -1,4 +1,4 @@
-#include "config.h"
+#include "voipmonitor.h"
 #ifdef ENABLE_MANAGER
 #include <iostream>
 #include <sys/types.h>
@@ -29,7 +29,6 @@
 #include <sstream>
 
 #include "ipaccount.h"
-#include "voipmonitor.h"
 #include "calltable.h"
 #include "sniff.h"
 #include "format_slinear.h"
@@ -140,10 +139,10 @@ public:
 		unlock();
 	}
 	void lock() {
-		while(__sync_lock_test_and_set(&_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&_sync, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&_sync);
+		ATOMIC_CLEAR(&_sync);
 	}
 private:
 	map<string, u_long> data;
@@ -985,7 +984,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 ///////////////////////////////////////////////////////////////
         } else if(strstr(buf, "stoplivesniffer")) {
                 sscanf(buf, "stoplivesniffer %u", &uid);
-		while(__sync_lock_test_and_set(&usersniffer_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&usersniffer_sync, 1));
                 map<unsigned int, livesnifferfilter_t*>::iterator usersnifferIT = usersniffer.find(uid);
                 if(usersnifferIT != usersniffer.end()) {
                         delete usersnifferIT->second;
@@ -999,18 +998,18 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 				 syslog(LOG_NOTICE, "stop livesniffer - uid: %u", uid);
 			}
                 }
-                __sync_lock_release(&usersniffer_sync);
+                ATOMIC_CLEAR(&usersniffer_sync);
                 return 0;
 	} else if(strstr(buf, "getlivesniffer") != NULL) {
 		sscanf(buf, "getlivesniffer %u", &uid);
-		while(__sync_lock_test_and_set(&usersniffer_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&usersniffer_sync, 1));
 		map<unsigned int, livesnifferfilter_t*>::iterator usersnifferIT = usersniffer.find(uid);
 		if(usersnifferIT != usersniffer.end()) {
 			snprintf(sendbuf, BUFSIZE, "%d", 1);
 		} else {
 			snprintf(sendbuf, BUFSIZE, "%d", 0);
 		}
-		__sync_lock_release(&usersniffer_sync);
+		ATOMIC_CLEAR(&usersniffer_sync);
 		if ((size = sendvm(client, sshchannel, sendbuf, strlen(sendbuf), 0)) == -1){
 			cerr << "Error sending data to client" << endl;
 			return -1;
@@ -1025,7 +1024,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			syslog(LOG_NOTICE, "set livesniffer - uid: %u search: %s value: %s", uid, search, value);
 		}
 		
-		while(__sync_lock_test_and_set(&usersniffer_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&usersniffer_sync, 1));
 
 		if(memmem(search, sizeof(search), "all", 3)) {
 			global_livesniffer = 1;
@@ -1039,7 +1038,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 				usersniffer[uid] = filter;
 			}
 			updateLivesnifferfilters();
-			__sync_lock_release(&usersniffer_sync);
+			ATOMIC_CLEAR(&usersniffer_sync);
 			return 0;
 		}
 
@@ -1174,7 +1173,7 @@ int parse_command(char *buf, int size, int client, int eof, const char *buf_long
 			updateLivesnifferfilters();
 		}
 		
-		__sync_lock_release(&usersniffer_sync);
+		ATOMIC_CLEAR(&usersniffer_sync);
 		
 		if ((size = sendvm(client, sshchannel, "ok", 2, 0)) == -1){
 			cerr << "Error sending data to client" << endl;

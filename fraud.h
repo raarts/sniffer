@@ -887,10 +887,10 @@ private:
 				 sFraudCallInfo::eTypeCallInfo typeCallInfo, u_int64_t at);
 	void completeCallInfo_country_code(sFraudCallInfo *callInfo, CheckInternational *checkInternational);
 	void lock_alerts() {
-		while(__sync_lock_test_and_set(&this->_sync_alerts, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_alerts, 1));
 	}
 	void unlock_alerts() {
-		__sync_lock_release(&this->_sync_alerts);
+		ATOMIC_CLEAR(&this->_sync_alerts);
 	}
 private:
 	vector<FraudAlert*> alerts;

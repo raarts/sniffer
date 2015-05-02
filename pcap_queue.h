@@ -57,18 +57,18 @@ public:
 	}
 private:
 	void lock_queue() {
-		while(__sync_lock_test_and_set(&this->_sync_queue, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_queue, 1));
 	}
 	void unlock_queue() {
-		__sync_lock_release(&this->_sync_queue);
+		ATOMIC_CLEAR(&this->_sync_queue);
 	}
 	void add_sizeOfBlocks(size_t size) {
-		__sync_fetch_and_add(&this->sizeOfBlocks, size);
-		__sync_fetch_and_add(&this->countOfBlocks, 1);
+		ATOMIC_FETCH_AND_ADD(&this->sizeOfBlocks, size);
+		ATOMIC_FETCH_AND_ADD(&this->countOfBlocks, 1);
 	}
 	void sub_sizeOfBlocks(size_t size) {
-		__sync_fetch_and_sub(&this->sizeOfBlocks, size);
-		__sync_fetch_and_sub(&this->countOfBlocks, 1);
+		ATOMIC_FETCH_AND_SUB(&this->sizeOfBlocks, size);
+		ATOMIC_FETCH_AND_ADD(&this->countOfBlocks, 1);
 	}
 private:
 	std::deque<pcap_block_store*> queueBlock;
@@ -114,10 +114,10 @@ private:
 	bool close(eTypeHandle typeHandle);
 	bool destroy();
 	void lock_sync_flush_file() {
-		while(__sync_lock_test_and_set(&this->_sync_flush_file, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_flush_file, 1));
 	}
 	void unlock_sync_flush_file() {
-		__sync_lock_release(&this->_sync_flush_file);
+		ATOMIC_CLEAR(&this->_sync_flush_file);
 	}
 private:
 	u_int id;
@@ -150,16 +150,16 @@ private:
 	void cleanupFileStore();
 	uint64_t getFileStoreUseSize(bool lock = true);
 	void lock_queue() {
-		while(__sync_lock_test_and_set(&this->_sync_queue, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_queue, 1));
 	}
 	void unlock_queue() {
-		__sync_lock_release(&this->_sync_queue);
+		ATOMIC_CLEAR(&this->_sync_queue);
 	}
 	void lock_fileStore() {
-		while(__sync_lock_test_and_set(&this->_sync_fileStore, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_fileStore, 1));
 	}
 	void unlock_fileStore() {
-		__sync_lock_release(&this->_sync_fileStore);
+		ATOMIC_CLEAR(&this->_sync_fileStore);
 	}
 	void add_sizeOfBlocksInMemory(size_t size) {
 		extern cBuffersControl buffersControl;
@@ -527,10 +527,10 @@ protected:
 		threadsDeleteData[(counterPushDelete++) % deleteThreadsCount]->queuePackets.push(headerPacket, true);
 	}
 	void lock_delete() {
-		while(__sync_lock_test_and_set(&this->_sync_delete, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_delete, 1));
 	}
 	void unlock_delete() {
-		__sync_lock_release(&this->_sync_delete);
+		ATOMIC_CLEAR(&this->_sync_delete);
 	}
 protected:
 	pcap_dumper_t *fifoWritePcapDumper;
@@ -656,10 +656,10 @@ private:
 	void checkFreeSizeCachedir();
 	void cleanupBlockStoreTrash(bool all = false);
 	void lock_packetServerConnections() {
-		while(__sync_lock_test_and_set(&this->_sync_packetServerConnections, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_packetServerConnections, 1));
 	}
 	void unlock_packetServerConnections() {
-		__sync_lock_release(&this->_sync_packetServerConnections);
+		ATOMIC_CLEAR(&this->_sync_packetServerConnections);
 	}
 protected:
 	ip_port packetServerIpPort;

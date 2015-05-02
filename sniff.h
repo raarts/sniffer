@@ -446,12 +446,12 @@ private:
 	void sipProcess_createCall(packet_parse_s *parse_packet);
 	void *outThreadFunction();
 	void lock_push() {
-		while(__sync_lock_test_and_set(&this->_sync_push, 1)) {
+		while(ATOMIC_TEST_AND_SET(&this->_sync_push, 1)) {
 			usleep(10);
 		}
 	}
 	void unlock_push() {
-		__sync_lock_release(&this->_sync_push);
+		ATOMIC_CLEAR(&this->_sync_push);
 	}
 private:
 	packet_parse_s **qring;

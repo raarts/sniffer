@@ -400,10 +400,10 @@ public:
 	void autoloadFromSqlVmExport();
 private:
 	void lock_processes() {
-		while(__sync_lock_test_and_set(&this->_sync_processes, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_processes, 1));
 	}
 	void unlock_processes() {
-		__sync_lock_release(&this->_sync_processes);
+		ATOMIC_CLEAR(&this->_sync_processes);
 	}
 private:
 	map<int, MySqlStore_process*> processes;

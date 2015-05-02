@@ -255,8 +255,8 @@ public:
 			if(chunk) {
 				delete [] chunk;
 				chunk = NULL;
-				__sync_fetch_and_sub(&chunkBuffer->chunk_buffer_size, len);
-				__sync_fetch_and_sub(&ChunkBuffer::chunk_buffers_sumsize, len);
+				ATOMIC_FETCH_AND_SUB(&chunkBuffer->chunk_buffer_size, len);
+				ATOMIC_FETCH_AND_SUB(&ChunkBuffer::chunk_buffers_sumsize, len);
 			}
 		}
 		char *chunk;
@@ -337,16 +337,16 @@ public:
 	void chunkIterate(ChunkBuffer_baseIterate *chunkbufferIterateEv, bool freeChunks = false, bool enableContinue = false, u_int32_t limitLength = 0);
 	u_int32_t getChunkIterateSafeLimitLength(u_int32_t limitLength);
 	void lock_chunkBuffer() {
-		while(__sync_lock_test_and_set(&this->_sync_chunkBuffer, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_chunkBuffer, 1));
 	}
 	void unlock_chunkBuffer() {
-		__sync_lock_release(&this->_sync_chunkBuffer);
+		ATOMIC_CLEAR(&this->_sync_chunkBuffer);
 	}
 	void lock_compress() {
-		while(__sync_lock_test_and_set(&this->_sync_compress, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_compress, 1));
 	}
 	void unlock_compress() {
-		__sync_lock_release(&this->_sync_compress);
+		ATOMIC_CLEAR(&this->_sync_compress);
 	}
 	void addTarPosInCall(u_int64_t pos);
 	bool isFull() {

@@ -1,3 +1,4 @@
+#include "voipmonitor.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <iomanip>
@@ -2156,7 +2157,7 @@ PcapQueue_readFromInterface_base::~PcapQueue_readFromInterface_base() {
 bool PcapQueue_readFromInterface_base::startCapture() {
 	static volatile int _sync_start_capture = 0;
 	long unsigned int rssBeforeActivate, rssAfterActivate;
-	while(__sync_lock_test_and_set(&_sync_start_capture, 1)) {
+	while(ATOMIC_TEST_AND_SET(&_sync_start_capture, 1)) {
 		usleep(100);
 	}
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -2262,10 +2263,10 @@ bool PcapQueue_readFromInterface_base::startCapture() {
 		sprintf(pname, "/var/spool/voipmonitor/voipmonitordump-%s-%u.pcap", this->interfaceName.c_str(), (unsigned int)time(NULL));
 		this->pcapDumpHandle = pcap_dump_open(this->pcapHandle, pname);
 	}
-	__sync_lock_release(&_sync_start_capture);
+	ATOMIC_CLEAR(&_sync_start_capture);
 	return(true);
 failed:
-	__sync_lock_release(&_sync_start_capture);
+	ATOMIC_CLEAR(&_sync_start_capture);
 	return(false);
 }
 
@@ -2523,11 +2524,11 @@ PcapQueue_readFromInterfaceThread::~PcapQueue_readFromInterfaceThread() {
 
 inline void PcapQueue_readFromInterfaceThread::push(pcap_pkthdr* header,u_char* packet, u_int offset, uint16_t *md5, int index, uint32_t counter) {
 	uint32_t writeIndex = this->writeit[index] % this->qringmax;
-	//while(__sync_lock_test_and_set(&this->_sync_qring, 1));
+	//while(ATOMIC_TEST_AND_SET(&this->_sync_qring, 1));
 	while(this->qring[index][writeIndex].used > 0) {
-		//__sync_lock_release(&this->_sync_qring);
+		//ATOMIC_CLEAR(&this->_sync_qring);
 		usleep(100);
-		//while(__sync_lock_test_and_set(&this->_sync_qring, 1));
+		//while(ATOMIC_TEST_AND_SET(&this->_sync_qring, 1));
 	}
 	if(this->typeThread == read || 
 	   (this->typeThread == defrag && opt_pcap_queue_iface_dedup_separate_threads_extend__ext_mode) ||
@@ -2558,12 +2559,12 @@ inline void PcapQueue_readFromInterfaceThread::push(pcap_pkthdr* header,u_char* 
 	} else {
 		this->writeit[index]++;
 	}
-	//__sync_lock_release(&this->_sync_qring);
+	//ATOMIC_CLEAR(&this->_sync_qring);
 }
 
 inline PcapQueue_readFromInterfaceThread::hpi PcapQueue_readFromInterfaceThread::pop(int index, bool moveReadit, bool deferDestroy) {
 	uint32_t readIndex = this->readit[index] % this->qringmax;
-	//while(__sync_lock_test_and_set(&this->_sync_qring, 1));
+	//while(ATOMIC_TEST_AND_SET(&this->_sync_qring, 1));
 	hpi rslt_hpi;
 	if(this->qring[index][readIndex].used <= 0) {
 		rslt_hpi.header = NULL;
@@ -2588,7 +2589,7 @@ inline PcapQueue_readFromInterfaceThread::hpi PcapQueue_readFromInterfaceThread:
 			}
 		}
 	}
-	//__sync_lock_release(&this->_sync_qring);
+	//ATOMIC_CLEAR(&this->_sync_qring);
 	return(rslt_hpi);
 }
 

@@ -1,6 +1,8 @@
 #ifndef SNIFF_INLINE_C
 #define SNIFF_INLINE_C
 
+#include "voipmonitor.h"
+
 #if ( defined( __FreeBSD__ ) || defined ( __NetBSD__ ) )
 # ifndef FREEBSD
 #  define FREEBSD

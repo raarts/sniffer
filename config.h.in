@@ -84,6 +84,12 @@
 /* Define to 1 if you have the `powl' function. */
 #undef HAVE_POWL
 
+/* Define if we have __atomic_fetch_add */
+#undef HAVE__ATOMIC_FETCH_ADD
+
+/* Define if we have __sync_fetch_and_add */
+#undef HAVE__SYNC_FETCH_AND_ADD
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 

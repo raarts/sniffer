@@ -53,6 +53,23 @@
 
 #define TAR_MODULO_SECONDS 60
 
+#if defined(HAVE__ATOMIC_FETCH_ADD)
+#  define ATOMIC_FETCH_AND_ADD(a, b) __atomic_fetch_add ((a), (b), __ATOMIC_SEQ_CST)
+#  define ATOMIC_FETCH_AND_SUB(a, b) __atomic_fetch_sub ((a), (b), __ATOMIC_SEQ_CST)
+#  define ATOMIC_TEST_AND_SET(a, b)  __atomic_test_and_set((a), (b))
+#  define ATOMIC_CLEAR(a)            __atomic_clear((a), __ATOMIC_SEQ_CST)
+#elif defined(HAVE__SYNC_FETCH_AND_ADD)
+#  define ATOMIC_FETCH_AND_ADD(a, b) __sync_fetch_and_add((a), (b))
+#  define ATOMIC_FETCH_AND_SUB(a, b) __sync_fetch_and_sub((a), (b))
+#  define ATOMIC_TEST_AND_SET(a, b)  __sync_lock_test_and_set((a), (b))
+#  define ATOMIC_CLEAR(a)            __sync_lock_release((a))
+#else
+#  define ATOMIC_FETCH_AND_ADD(a, b) (a) += (b)
+#  define ATOMIC_FETCH_AND_SUB(a, b) (a) -= (b)
+#  define ATOMIC_TEST_AND_SET(a, b)  (a), (a)=(b)
+#  define ATOMIC_CLEAR(a)            (a) = NULL
+#  error "atomic operations not available"
+#endif
 
 /* choose what method wil be used to synchronize threads. NONBLOCK is the fastest. Do not enable both at once */
 // this is now defined in Makefile 

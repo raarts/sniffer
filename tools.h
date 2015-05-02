@@ -144,12 +144,12 @@ public:
 	}
 private:
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync, 1)) {
+		while(ATOMIC_TEST_AND_SET(&this->_sync, 1)) {
 			usleep(10);
 		}
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync);
+		ATOMIC_CLEAR(&this->_sync);
 	}
 private:
 	type_atomic atomicValue;
@@ -896,12 +896,12 @@ public:
 	}
 private:
 	void lock(int threadIndex) {
-		while(__sync_lock_test_and_set(&this->_sync[threadIndex], 1)) {
+		while(ATOMIC_TEST_AND_SET(&this->_sync[threadIndex], 1)) {
 			usleep(10);
 		}
 	}
 	void unlock(int threadIndex) {
-		__sync_lock_release(&this->_sync[threadIndex]);
+		ATOMIC_CLEAR(&this->_sync[threadIndex]);
 	}
 	void add_sizeOfDataInMemory(size_t size) {
 		extern cBuffersControl buffersControl;
@@ -1065,10 +1065,10 @@ public:
 		return(listIP.size());
 	}
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync);
+		ATOMIC_CLEAR(&this->_sync);
 	}
 private:
 	std::vector<IP> listIP;
@@ -1110,10 +1110,10 @@ public:
 		return(listPhoneNumber.size());
 	}
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync);
+		ATOMIC_CLEAR(&this->_sync);
 	}
 private:
 	std::vector<PhoneNumber> listPhoneNumber;
@@ -1393,10 +1393,10 @@ protected:
 private:
 	static void timerThread();
 	static void lock_list_saq() {
-		while(__sync_lock_test_and_set(&_sync_list_saq, 1));
+		while(ATOMIC_TEST_AND_SET(&_sync_list_saq, 1));
 	}
 	static void unlock_list_saq() {
-		__sync_lock_release(&_sync_list_saq);
+		ATOMIC_CLEAR(&_sync_list_saq);
 	}
 private:
 	static list<SafeAsyncQueue_base*> list_saq;
@@ -1420,22 +1420,22 @@ protected:
 private:
 	void shiftPush();
 	void lock_queue() {
-		while(__sync_lock_test_and_set(&_sync_queue, 1));
+		while(ATOMIC_TEST_AND_SET(&_sync_queue, 1));
 	}
 	void unlock_queue() {
-		__sync_lock_release(&_sync_queue);
+		ATOMIC_CLEAR(&_sync_queue);
 	}
 	void lock_push_queue() {
-		while(__sync_lock_test_and_set(&_sync_push_queue, 1));
+		while(ATOMIC_TEST_AND_SET(&_sync_push_queue, 1));
 	}
 	void unlock_push_queue() {
-		__sync_lock_release(&_sync_push_queue);
+		ATOMIC_CLEAR(&_sync_push_queue);
 	}
 	void lock_pop_queue() {
-		while(__sync_lock_test_and_set(&_sync_pop_queue, 1));
+		while(ATOMIC_TEST_AND_SET(&_sync_pop_queue, 1));
 	}
 	void unlock_pop_queue() {
-		__sync_lock_release(&_sync_pop_queue);
+		ATOMIC_CLEAR(&_sync_pop_queue);
 	}
 private:
 	deque<type_queue_item> *push_queue;
@@ -1643,16 +1643,16 @@ private:
 	bool socketWrite(void *data, u_int32_t dataLength);
 	void flushData();
 	void lock_data() {
-		while(__sync_lock_test_and_set(&this->_sync_data, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_data, 1));
 	}
 	void unlock_data() {
-		__sync_lock_release(&this->_sync_data);
+		ATOMIC_CLEAR(&this->_sync_data);
 	}
 	void add_size(size_t size) {
-		__sync_fetch_and_add(&this->_size_all, size);
+		ATOMIC_FETCH_AND_ADD(&this->_size_all, size);
 	}
 	void sub_size(size_t size) {
-		__sync_fetch_and_sub(&this->_size_all, size);
+		ATOMIC_FETCH_AND_SUB(&this->_size_all, size);
 	}
 private:
 	string name;
@@ -1675,10 +1675,10 @@ public:
 	void dump(pcap_pkthdr* header, u_char* packet, int dlt, const char *interfaceName);
 private:
 	void lock() {
-		while(__sync_lock_test_and_set(&this->_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync, 1));
 	}
 	void unlock() {
-		__sync_lock_release(&this->_sync);
+		ATOMIC_CLEAR(&this->_sync);
 	}
 private:
 	map<string, PcapDumper*> dumpers;

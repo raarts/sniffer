@@ -367,10 +367,10 @@ public:
 			return(maxTarName.empty() ? NULL : tarQueue->tars[maxTarName]);
 		}
 		void qlock() {
-			while(__sync_lock_test_and_set(&this->_sync_lock, 1));
+			while(ATOMIC_TEST_AND_SET(&this->_sync_lock, 1));
 		}
 		void qunlock() {
-			__sync_lock_release(&this->_sync_lock);
+			ATOMIC_CLEAR(&this->_sync_lock);
 		}
 		inline void processData(data_t *data, bool isClosed, size_t lenForProceed, size_t lenForProceedSafe);
 	};

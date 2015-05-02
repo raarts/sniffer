@@ -186,9 +186,9 @@ private:
 	static volatile int _sync;
 public:
 	static void lock_sync() {
-		while(__sync_lock_test_and_set(&_sync, 1));
+		while(ATOMIC_TEST_AND_SET(&_sync, 1));
 	}
 	static void unlock_sync() {
-		__sync_lock_release(&_sync);
+		ATOMIC_CLEAR(&_sync);
 	}
 };

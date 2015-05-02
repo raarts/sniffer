@@ -167,7 +167,7 @@ struct pcap_block_store {
 			this->unlock_sync_packet_lock();
 		} else {
 			#if SYNC_PCAP_BLOCK_STORE
-			__sync_add_and_fetch(&this->_sync_packet_lock, 1);
+			ATOMIC_FETCH_AND_ADD(&this->_sync_packet_lock, 1);
 			#else
 			++this->_sync_packet_lock_p;
 			#endif
@@ -183,7 +183,7 @@ struct pcap_block_store {
 			this->unlock_sync_packet_lock();
 		} else {
 			#if SYNC_PCAP_BLOCK_STORE
-			__sync_sub_and_fetch(&this->_sync_packet_lock, 1);
+			ATOMIC_FETCH_AND_ADD(&this->_sync_packet_lock, 1);
 			#else
 			++this->_sync_packet_lock_m;
 			#endif
@@ -211,12 +211,12 @@ struct pcap_block_store {
 	
 	void lock_sync_packet_lock() {
 		#if SYNC_PCAP_BLOCK_STORE
-		while(__sync_lock_test_and_set(&this->_sync_packet_lock, 1));
+		while(ATOMIC_TEST_AND_SET(&this->_sync_packet_lock, 1));
 		#endif
 	}
 	void unlock_sync_packet_lock() {
 		#if SYNC_PCAP_BLOCK_STORE
-		__sync_lock_release(&this->_sync_packet_lock);
+		ATOMIC_CLEAR(&this->_sync_packet_lock);
 		#endif
 	}
 	

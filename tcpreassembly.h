@@ -706,10 +706,10 @@ public:
 	u_int32_t getRemainDataLength(TcpReassemblyDataItem::eDirection direction);
 private:
 	void lock_queue() {
-		while(__sync_lock_test_and_set(&this->_sync_queue, 1)) usleep(100);
+		while(ATOMIC_TEST_AND_SET(&this->_sync_queue, 1)) usleep(100);
 	}
 	void unlock_queue() {
-		__sync_lock_release(&this->_sync_queue);
+		ATOMIC_CLEAR(&this->_sync_queue);
 	}
 	void pushpacket(TcpReassemblyStream::eDirection direction,
 		        TcpReassemblyStream_packet packet);
@@ -898,10 +898,10 @@ private:
 	void *cleanupThreadFunction(void *);
 	void *packetThreadFunction(void *);
 	void lock_links() {
-		while(__sync_lock_test_and_set(&this->_sync_links, 1)) usleep(100);
+		while(ATOMIC_TEST_AND_SET(&this->_sync_links, 1)) usleep(100);
 	}
 	void unlock_links() {
-		__sync_lock_release(&this->_sync_links);
+		ATOMIC_CLEAR(&this->_sync_links);
 	}
 private:
 	eType type;
