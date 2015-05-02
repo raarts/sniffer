@@ -207,11 +207,8 @@ if test "x$HAVE_LIBGNUTLS" = "x1" -a "x$HAVE_LIBGLIB" = "x1" ; then
 fi
 
 # Check for MySQL libraries (or MariaDB)
-AC_MSG_CHECKING(for mysql_config executable)
 AC_ARG_WITH(mysql, [  --with-mysql=PATH path to mysql_config binary or mysql prefix dir], [
-	if test "x$with_mysql" == xno ; then
-		MYSQL_CONFIG=""
-	elif test -x $withval -a -f $withval
+	if test -x $withval -a -f $withval
 	then
 		MYSQL_CONFIG=$withval
 	elif test -x $withval/bin/mysql_config -a -f $withval/bin/mysql_config
@@ -219,7 +216,9 @@ AC_ARG_WITH(mysql, [  --with-mysql=PATH path to mysql_config binary or mysql pre
 		MYSQL_CONFIG=$withval/bin/mysql_config
 	fi
 ], [
-	if test -x /usr/local/mysql/bin/mysql_config -a -f /usr/local/mysql/bin/mysql_config
+	if test "x$without_mysql" == xyes ; then
+		MYSQL_CONFIG=""
+	elif test -x /usr/local/mysql/bin/mysql_config -a -f /usr/local/mysql/bin/mysql_config
 	then
 		MYSQL_CONFIG=/usr/local/mysql/bin/mysql_config
 	elif test -x /usr/bin/mysql_config -a -f /usr/bin/mysql_config
@@ -249,7 +248,9 @@ else
     AC_MSG_RESULT($MYSQL_CONFIG)
     ENABLE_MYSQL_T=yes
 fi
-AC_CHECK_LIB([mysqlclient], [main], , AC_MSG_ERROR([Unable to find libmysqlclient. apt-get install libmysqlclient-dev | yum install mysql-devel | pkg install mysql56-client]))
+if test "$ENABLE_MYSQL_T" != "no" ; then
+  AC_CHECK_LIB([mysqlclient], [main], , AC_MSG_ERROR([Unable to find libmysqlclient. apt-get install libmysqlclient-dev | yum install mysql-devel | pkg install mysql56-client]))
+fi
 
 AC_CHECK_LIB([z], [main], , AC_MSG_ERROR([Unable to find libz. apt-get install zlib1g-dev | yum install zlib-devel]))
 
