@@ -24,10 +24,10 @@ endif
 
 GCCARCH = native
 
-core2cust: GCCARCH = core2
-core2: GCCARCH = core2
-clean: GCCARCH = core2
-Makefile.deps: GCCARCH = core2
+#core2cust: GCCARCH = core2
+#core2: GCCARCH = core2
+#clean: GCCARCH = core2
+#Makefile.deps: GCCARCH = core2
 
 
 version = $(shell grep RTPSENSOR_VERSION voipmonitor.h | cut -d" " -f 3 | tr -d "\"")
