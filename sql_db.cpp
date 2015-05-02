@@ -1942,8 +1942,9 @@ string _sqlEscapeString(const char *inputStr, int length, const char *typeDb) {
 					// add after create function test_escape
 					{    0, "\\0" },
 					{   26, "\\Z" }
-				},
-	escCharsOdbc[] = 
+				}
+#ifdef HAVE_LIBODBC
+	, escCharsOdbc[] = 
 				{ 
 					{ '\'', "\'\'" },
 					{ '\v', "" }, 		// vertical tab
@@ -1951,7 +1952,9 @@ string _sqlEscapeString(const char *inputStr, int length, const char *typeDb) {
 					{ '\f', "" }, 		// form feed
 					{ '\a', "" }, 		// alert (bell)
 					{ '\e', "" }, 		// escape
-				};
+				}
+#endif
+			;
 	escChar *escChars = NULL;
 	int countEscChars = 0;
 	if(isTypeDb("mysql", typeDb)) {
