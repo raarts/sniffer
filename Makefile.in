@@ -60,7 +60,7 @@ SHARED_LIBS = ${LIBLD} -lpthread -lpcap -lz ${LIBOGGVORBIS} ${LIBODBC} ${MYSQLLI
 STATIC_LIBS = -static @LIBTCMALLOC@ ${LIBODBC} -lltdl ${LIBLD} -lrt -lz ${LIBSSH} -lcrypt -lm -lcurl -lssl -lcrypto -static-libstdc++ -static-libgcc -lpcap -lpthread ${MYSQLLIB} -lpthread -lz -lc ${LIBOGGVORBIS} -lrt ${LIBSNAPPY} ${JSONLIB} ${LIBRRD} 
 INCLUDES =  -I/usr/local/include ${MYSQLINC} -I jitterbuffer/ ${JSONCFLAGS} ${GLIBCFLAGS}
 LIBS_PATH = -L/usr/local/lib/ 
-CXXFLAGS +=  -Wall -fPIC -g3 -O2 -march=$(GCCARCH) -mtune=${GCCARCH} ${INCLUDES}
+CXXFLAGS +=  -Wall -fPIC -g3 -O2 -march=$(GCCARCH) ${INCLUDES}
 CFLAGS += ${CXXFLAGS}
 LIBS = ${SHARED_LIBS} 
 LIBS2 = @LIBS2@
