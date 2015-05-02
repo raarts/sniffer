@@ -266,6 +266,9 @@ AS_IF([test "x$with_liblzma" != xno],
 
 #AC_CHECK_LIB([tcmalloc_minimal], [tc_malloc], HAVE_LIBTCMALLOC=1, AC_MSG_NOTICE([Unable to find tcmalloc_minimal library which speeds up threads by 10%. The library is optional: apt-get install libtcmalloc-minimal4 or compile from source https://code.google.com/p/gperftools/]))
 
+# when it's there, better use it.
+AC_CHECK_LIB([atomic], [main], AC_SUBST([LIBATOMIC],["-latomic"]))
+
 HAVE_LIBLZMA_T=no
 if test "x$HAVE_LIBLZMA" = "x1"; then 
 	AC_DEFINE([HAVE_LIBLZMA], [1], [Define if using liblzma])
